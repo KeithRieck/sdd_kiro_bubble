@@ -97,16 +97,29 @@ class SpawnSystem {
   }
 
   /**
-   * Get random spawn position avoiding edges
+   * Get random spawn position avoiding edges and player bubble
    * @param {number} size - Bubble size
+   * @param {number} playerX - Player bubble X position
+   * @param {number} playerY - Player bubble Y position
    * @returns {Object} x and y coordinates
    */
-  getRandomPosition(size) {
+  getRandomPosition(size, playerX, playerY) {
     const margin = size / 2 + 10;
-    return {
-      x: margin + Math.random() * (this.worldWidth - margin * 2),
-      y: margin + Math.random() * (this.worldHeight - margin * 2)
-    };
+    const minDistanceFromPlayer = 200;  // Minimum 200 pixels from player center
+    let x, y, distance;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    do {
+      x = margin + Math.random() * (this.worldWidth - margin * 2);
+      y = margin + Math.random() * (this.worldHeight - margin * 2);
+      const dx = x - playerX;
+      const dy = y - playerY;
+      distance = Math.sqrt(dx * dx + dy * dy);
+      attempts++;
+    } while (distance < minDistanceFromPlayer && attempts < maxAttempts);
+    
+    return { x, y };
   }
 
   /**
@@ -125,17 +138,19 @@ class SpawnSystem {
   /**
    * Spawn a new AI bubble with balanced size distribution
    * @param {number} playerSize - Current player bubble size
+   * @param {number} playerX - Player bubble X position
+   * @param {number} playerY - Player bubble Y position
    * @param {number} currentCount - Current number of AI bubbles
    * @returns {AIBubble|null} New bubble or null if at capacity
    */
-  spawnBubble(playerSize, currentCount) {
+  spawnBubble(playerSize, playerX, playerY, currentCount) {
     if (currentCount >= this.targetBubbleCount) {
       return null;
     }
 
     const sizeRange = this.calculateSizeRange(playerSize);
     const size = this.generateBalancedSize(sizeRange, playerSize);
-    const position = this.getRandomPosition(size);
+    const position = this.getRandomPosition(size, playerX, playerY);
     const velocity = this.getRandomVelocity();
 
     return new AIBubble(

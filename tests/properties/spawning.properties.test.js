@@ -30,11 +30,13 @@ describe('SpawnSystem Properties', () => {
         fc.property(
           fc.integer({ min: 10, max: 100 }), // playerSize
           fc.integer({ min: 0, max: 50 }),   // currentCount
-          (playerSize, currentCount) => {
+          fc.float({ min: 200, max: 600, noNaN: true }),  // playerX
+          fc.float({ min: 200, max: 400, noNaN: true }),  // playerY
+          (playerSize, currentCount, playerX, playerY) => {
             const scene = createMockScene();
             const spawnSystem = new SpawnSystem(scene, 800, 600, 100);
             
-            const bubble = spawnSystem.spawnBubble(playerSize, currentCount);
+            const bubble = spawnSystem.spawnBubble(playerSize, playerX, playerY, currentCount);
             
             if (bubble !== null) {
               return bubble.size >= 10 && bubble.size <= 70;
@@ -80,7 +82,9 @@ describe('SpawnSystem Properties', () => {
       fc.assert(
         fc.property(
           fc.integer({ min: 30, max: 60 }), // playerSize
-          (playerSize) => {
+          fc.float({ min: 200, max: 600, noNaN: true }), // playerX
+          fc.float({ min: 200, max: 400, noNaN: true }), // playerY
+          (playerSize, playerX, playerY) => {
             const scene = createMockScene();
             const spawnSystem = new SpawnSystem(scene, 800, 600, 100);
             const sampleSize = 100;
@@ -89,7 +93,7 @@ describe('SpawnSystem Properties', () => {
             
             // Spawn many bubbles to test distribution
             for (let i = 0; i < sampleSize; i++) {
-              const bubble = spawnSystem.spawnBubble(playerSize, i);
+              const bubble = spawnSystem.spawnBubble(playerSize, playerX, playerY, i);
               if (bubble && bubble.size < playerSize) {
                 smallerCount++;
               }
@@ -114,7 +118,9 @@ describe('SpawnSystem Properties', () => {
       fc.assert(
         fc.property(
           fc.integer({ min: 30, max: 60 }), // playerSize
-          (playerSize) => {
+          fc.float({ min: 200, max: 600, noNaN: true }), // playerX
+          fc.float({ min: 200, max: 400, noNaN: true }), // playerY
+          (playerSize, playerX, playerY) => {
             const scene = createMockScene();
             const spawnSystem = new SpawnSystem(scene, 800, 600, 100);
             const sampleSize = 100;
@@ -123,7 +129,7 @@ describe('SpawnSystem Properties', () => {
             
             // Spawn many bubbles to test distribution
             for (let i = 0; i < sampleSize; i++) {
-              const bubble = spawnSystem.spawnBubble(playerSize, i);
+              const bubble = spawnSystem.spawnBubble(playerSize, playerX, playerY, i);
               if (bubble && bubble.size > playerSize) {
                 largerCount++;
               }
@@ -148,13 +154,15 @@ describe('SpawnSystem Properties', () => {
         fc.property(
           fc.integer({ min: 10, max: 70 }), // bubbleSize
           fc.integer({ min: 10, max: 60 }), // playerSize
-          (bubbleSize, playerSize) => {
+          fc.float({ min: 200, max: 600, noNaN: true }), // playerX
+          fc.float({ min: 200, max: 400, noNaN: true }), // playerY
+          (bubbleSize, playerSize, playerX, playerY) => {
             const scene = createMockScene();
             const worldWidth = 800;
             const worldHeight = 600;
             const spawnSystem = new SpawnSystem(scene, worldWidth, worldHeight, 100);
             
-            const position = spawnSystem.getRandomPosition(bubbleSize);
+            const position = spawnSystem.getRandomPosition(bubbleSize, playerX, playerY);
             const margin = bubbleSize / 2 + 10;
             
             return (
@@ -170,18 +178,49 @@ describe('SpawnSystem Properties', () => {
     });
   });
 
+  describe('Property 28: AI Bubble Spawn Distance from Player', () => {
+    it('should spawn bubbles at least 200 pixels away from player center', () => {
+      // Feature: bubble-consumption-game, Property 28: AI Bubble Spawn Distance from Player
+      // Validates: Requirements 4.2
+      
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 10, max: 70 }), // bubbleSize
+          fc.float({ min: 200, max: 600, noNaN: true }), // playerX
+          fc.float({ min: 200, max: 400, noNaN: true }), // playerY
+          (bubbleSize, playerX, playerY) => {
+            const scene = createMockScene();
+            const worldWidth = 800;
+            const worldHeight = 600;
+            const spawnSystem = new SpawnSystem(scene, worldWidth, worldHeight, 100);
+            
+            const position = spawnSystem.getRandomPosition(bubbleSize, playerX, playerY);
+            const dx = position.x - playerX;
+            const dy = position.y - playerY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            return distance >= 200;
+          }
+        ),
+        { numRuns: 100 }
+      );
+    });
+  });
+
   describe('Additional Properties', () => {
     it('should return null when at capacity', () => {
       fc.assert(
         fc.property(
           fc.integer({ min: 10, max: 100 }), // playerSize
           fc.integer({ min: 10, max: 50 }),  // targetCount
-          (playerSize, targetCount) => {
+          fc.float({ min: 200, max: 600, noNaN: true }),  // playerX
+          fc.float({ min: 200, max: 400, noNaN: true }),  // playerY
+          (playerSize, targetCount, playerX, playerY) => {
             const scene = createMockScene();
             const spawnSystem = new SpawnSystem(scene, 800, 600, targetCount);
             
             // Try to spawn when already at capacity
-            const bubble = spawnSystem.spawnBubble(playerSize, targetCount);
+            const bubble = spawnSystem.spawnBubble(playerSize, playerX, playerY, targetCount);
             
             return bubble === null;
           }

@@ -28,6 +28,8 @@ class GameScene extends Phaser.Scene {
     this.spawnSystem = null;
     this.hud = null;
     this.sounds = {};
+    this.gameWorldBackground = null;  // Black background for Game_World
+    this.isPaused = false;  // Track pause state for scenario restart
   }
 
   /**
@@ -50,6 +52,16 @@ class GameScene extends Phaser.Scene {
    * Create game objects and initialize systems
    */
   create() {
+    // Create black background for Game_World (800x600)
+    this.gameWorldBackground = this.add.rectangle(
+      0, 
+      0, 
+      this.worldWidth, 
+      this.worldHeight, 
+      0x000000  // Black (#000000)
+    );
+    this.gameWorldBackground.setOrigin(0, 0);
+    
     // Load sound effects
     this.sounds.pop = this.sound.add('pop');
     this.sounds.explosion = this.sound.add('explosion');
@@ -87,6 +99,11 @@ class GameScene extends Phaser.Scene {
    * @param {number} delta - Time since last frame in milliseconds
    */
   update(time, delta) {
+    // Skip all updates if paused
+    if (this.isPaused) {
+      return;
+    }
+    
     // Update player bubble
     this.playerBubble.update(delta);
 
@@ -156,15 +173,7 @@ class GameScene extends Phaser.Scene {
       // Play fanfare and restart with increased difficulty
       this.sounds.fanfare.play();
       this.currentBubbleCount += 2;
-      
-      // Small delay before restart to let sound play
-      this.time.delayedCall(500, () => {
-        this.scene.restart({ 
-          bubbleCount: this.currentBubbleCount,
-          lives: this.lives,
-          score: this.score
-        });
-      });
+      this.restartScenarioWithPause();
     } else {
       // Game over
       this.handleGameOver();
@@ -178,9 +187,21 @@ class GameScene extends Phaser.Scene {
   handleWin() {
     this.sounds.fanfare.play();
     this.currentBubbleCount += 2;
+    this.restartScenarioWithPause();
+  }
+
+  /**
+   * Restart scenario with 2-second pause and player size reset
+   * Sets isPaused to true, waits 2 seconds, then resets player size to 30 and restarts scene
+   */
+  restartScenarioWithPause() {
+    this.isPaused = true;
     
-    // Small delay before restart to let sound play
-    this.time.delayedCall(500, () => {
+    // Wait 2 seconds before restarting
+    this.time.delayedCall(2000, () => {
+      this.isPaused = false;
+      // Reset player bubble size to 30 pixels
+      this.playerBubble.size = 30;
       this.scene.restart({ 
         bubbleCount: this.currentBubbleCount,
         lives: this.lives,
@@ -223,6 +244,8 @@ class GameScene extends Phaser.Scene {
     for (let i = 0; i < targetCount; i++) {
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
+        this.playerBubble.x,
+        this.playerBubble.y,
         this.aiBubbles.length
       );
       if (bubble) {
@@ -239,6 +262,8 @@ class GameScene extends Phaser.Scene {
     while (this.aiBubbles.length < targetCount) {
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
+        this.playerBubble.x,
+        this.playerBubble.y,
         this.aiBubbles.length
       );
       if (bubble) {

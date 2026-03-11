@@ -2,7 +2,7 @@ Hosted at: https://keithrieck.github.io/sdd_kiro_bubble/index.html
 
 # Bubble Game
 
-This was a little experiment in [Spec Driven Development](https://en.wikipedia.org/wiki/Spec-driven_development) using Amazon's [Kiro](https://kiro.dev/) development environment. 
+This was my first experiment in [Spec Driven Development](https://en.wikipedia.org/wiki/Spec-driven_development) using Amazon's [Kiro](https://kiro.dev/) development environment. 
 
 ## Initial development using Kiro
 
@@ -11,7 +11,7 @@ The Kiro tool walks you through a series of steps:
 1. **Setup**: Initially, it asks for a short summary of your project.  From this, it generates an initial [`requirements.md`](.kiro/specs/bubble-consumption-game/requirements.md) document.  My initial description was:
     * Web game where the user plays a bubble who consumes smaller bubbles but avoids larger bubbles.
 2. **Requirements**: I hand-edited the requirements document extensively based on how I thought the game should go. When this was done, Kiro generated the [`design.md`](.kiro/specs/bubble-consumption-game/design.md) document.
-3. **Design**: Going over the design, I realized that there were requirements that I should have added to the first document.  Then, I specified changes to the design in the chat window (rather than hand-editing the document.)
+3. **Design**: Going over the design, I realized that there were requirements that I should have added to the first document.  Then, I specified changes to the design in the chat window (rather than hand-editing the document.)  It's cool that they make use of [Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) to generate diagrams, the code contains good [JSDoc](https://jsdoc.app/about-getting-started) comments, and there are a lot of unit tests.
     * Add requirements to the requirements specification regarding sounds.  There should be a "pop" sound when the PlayerBubble consumes a smaller AI_Bubble.  There should be an explosion sound when the PlayerBubble collides with a bubble of larger or equal size.  There should be a fanfare sound when a level is reset.
     * Add a requirement to the requirements specification regarding "AI Bubble Behavior" and random spawning of bubbles.  On the first screen, there should be 10 random AI_Bubbles.  After each subsequent scene reset, there should be 2 more random AI_Bubbles than the previous scene.
     * There should be a Phaser scene called PreloaderScene that loads any graphics and sound assets.  PreloaderScene should display a logo while assets are loading.  After PreloaderScene is finished, it should start the GameScene.   There should be a Phaser scene called BootScene that loads the logo  that PreloaderScene will display.  After BootScene is finished, it should start the PreloaderScene.  The first scene started in the game should be BootScene.
@@ -24,7 +24,20 @@ I probably should have initialized git first and then made the initial commit be
 
 Honestly, even for this simple game, the documents generated were **large**.  To realistically review them ought to take a day or more.  It's extremely tempting to just charge forward, see what is generated, and then fix stuff later.   When using this tool in a work environment, it would take genuine discipline to read and review everything properly.
 
-For the initial development, I used Kiro on their Free tier, which provides 50 credits per month.  It appears that generating the spec cost around 10 credits and running the tasks also cost around 10. 
+For the initial development, I used Kiro on their Free tier.  The free tier provides 50 credits per month, although I received 500 bonus credits for signing in with GitHub.  Good thing, because I consumed 108.4 credits to get this far.
+
+I pushed this to GitHub and configued the repository to run this game under [GitHub Pages](https://docs.github.com/en/pages).  The game works, although I can think of many things to change here.
+
+## Refinement
+
+I decide to modify the requirements and design using the chat window:
+
+* Add a requirement that the screen background should be dark grary, but that the Game_world background should be black.
+* Add a requirement that the score and count of lives should be displayed outside the Game_World in 24 point Ariel or Helvetica.
+* Add a requirement that when a new AI_Bubble is spawned, its center must be at least 200 pixels away from the center of the Player_Bubble.
+* Add a requirement that when the scenario restarts, it will pause for 2 seconds and then will reduce the Player_Bubble size back to 30.
+
+These changes updated the `requirements.md` document.  I had Kiro regenerate the `design.md` and `tasks.md`.  It this point, Kiro told me the five tasks that had been updated and offered to execute the changes for me.  Again, this took a while.  Even if it only ran certain tasks, it appeaers to have executed the tests associated with all tasks.
 
 ---
 

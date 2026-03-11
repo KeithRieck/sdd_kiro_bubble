@@ -9,7 +9,7 @@ const config = {
   width: 800,
   height: 600,
   parent: 'game-container',
-  backgroundColor: '#000000',
+  backgroundColor: '#808080',  // Dark gray screen background
   physics: {
     default: 'arcade',
     arcade: {

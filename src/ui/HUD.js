@@ -13,15 +13,18 @@ class HUD {
 
   /**
    * Create the UI elements (score and lives text)
+   * Uses 24pt Arial or Helvetica font as per Requirements 6.3
    */
   createUI() {
     this.scoreText = this.scene.add.text(10, 10, 'Score: 0', {
-      fontSize: '24px',
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
 
     this.livesText = this.scene.add.text(10, 40, 'Lives: 3', {
-      fontSize: '24px',
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
   }

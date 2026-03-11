@@ -6,11 +6,14 @@ The bubble consumption game is a browser-based Progressive Web Application (PWA)
 
 The architecture follows a client-side only approach with no server communication. All game logic, rendering, and state management execute in the browser. The Phaser framework provides the game loop, rendering pipeline, input handling, and physics system.
 
+The visual design features a dark gray screen background with a black Game_World area where gameplay occurs. The HUD displays score and lives outside the Game_World in 24-point Arial/Helvetica font. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds and resets the player bubble to 30 pixels.
+
 Key design goals:
 - Smooth 30+ FPS gameplay on modern browsers
 - Responsive input handling for both mouse and touch
 - Accurate collision detection using circle-to-circle distance calculations
 - Dynamic difficulty scaling based on player bubble size
+- AI bubbles spawn at least 200 pixels away from the player
 - Offline-first PWA architecture with service worker caching
 
 ## Architecture
@@ -42,6 +45,16 @@ graph TD
 - **PWA**: Service Worker API + Web App Manifest
 - **Build**: No build step required (native ES modules)
 - **Storage**: None required (no persistence between sessions)
+
+### Visual Design
+
+The game uses a layered visual approach:
+- **Screen Background**: Dark gray (#808080) - the outer browser canvas
+- **Game_World Background**: Black (#000000) - the 800x600 playable area
+- **HUD Elements**: Positioned outside Game_World, rendered in 24pt Arial/Helvetica
+- **Bubbles**: Rendered within the black Game_World area
+
+This creates a clear visual separation between the playable area and UI elements.
 
 ### Module Organization
 
@@ -91,7 +104,7 @@ const config = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
-  backgroundColor: '#000000',
+  backgroundColor: '#808080',  // Dark gray screen background
   scene: [BootScene, PreloaderScene, GameScene],
   physics: {
     default: 'arcade',
@@ -501,17 +514,19 @@ class SpawnSystem {
   /**
    * Spawn a new AI bubble with balanced size distribution
    * @param {number} playerSize - Current player bubble size
+   * @param {number} playerX - Player bubble X position
+   * @param {number} playerY - Player bubble Y position
    * @param {number} currentCount - Current number of AI bubbles
    * @returns {AIBubble|null} New bubble or null if at capacity
    */
-  spawnBubble(playerSize, currentCount) {
+  spawnBubble(playerSize, playerX, playerY, currentCount) {
     if (currentCount >= this.targetBubbleCount) {
       return null;
     }
 
     const sizeRange = this.calculateSizeRange(playerSize);
     const size = this.generateBalancedSize(sizeRange, playerSize);
-    const position = this.getRandomPosition(size);
+    const position = this.getRandomPosition(size, playerX, playerY);
     const velocity = this.getRandomVelocity();
 
     return new AIBubble(
@@ -546,16 +561,29 @@ class SpawnSystem {
   }
 
   /**
-   * Get random spawn position avoiding edges
+   * Get random spawn position avoiding edges and player bubble
    * @param {number} size - Bubble size
+   * @param {number} playerX - Player bubble X position
+   * @param {number} playerY - Player bubble Y position
    * @returns {Object} x and y coordinates
    */
-  getRandomPosition(size) {
+  getRandomPosition(size, playerX, playerY) {
     const margin = size / 2 + 10;
-    return {
-      x: margin + Math.random() * (this.worldWidth - margin * 2),
-      y: margin + Math.random() * (this.worldHeight - margin * 2)
-    };
+    const minDistanceFromPlayer = 200;  // Minimum 200 pixels from player center
+    let x, y, distance;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    do {
+      x = margin + Math.random() * (this.worldWidth - margin * 2);
+      y = margin + Math.random() * (this.worldHeight - margin * 2);
+      const dx = x - playerX;
+      const dy = y - playerY;
+      distance = Math.sqrt(dx * dx + dy * dy);
+      attempts++;
+    } while (distance < minDistanceFromPlayer && attempts < maxAttempts);
+    
+    return { x, y };
   }
 
   /**
@@ -591,6 +619,8 @@ class GameScene extends Phaser.Scene {
     this.hud = null;
     this.sounds = {};
     this.currentBubbleCount = 10;  // Tracks bubble count across scene resets
+    this.gameWorldBackground = null;  // Black background for Game_World
+    this.isPaused = false;  // Track pause state for scenario restart
   }
 
   init(data) {
@@ -604,6 +634,16 @@ class GameScene extends Phaser.Scene {
     // Initialize game state
     this.lives = 3;
     this.score = 0;
+    
+    // Create black background for Game_World
+    this.gameWorldBackground = this.add.rectangle(
+      0, 
+      0, 
+      this.worldWidth, 
+      this.worldHeight, 
+      0x000000  // Black
+    );
+    this.gameWorldBackground.setOrigin(0, 0);
     
     // Load sound effects
     this.sounds.pop = this.sound.add('pop');
@@ -637,6 +677,11 @@ class GameScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    // Skip updates if paused
+    if (this.isPaused) {
+      return;
+    }
+    
     // Update player bubble
     this.playerBubble.update(delta);
 
@@ -686,7 +731,7 @@ class GameScene extends Phaser.Scene {
     if (this.lives > 0) {
       this.sounds.fanfare.play();
       this.currentBubbleCount += 2;  // Increase difficulty
-      this.scene.restart({ bubbleCount: this.currentBubbleCount });
+      this.restartScenarioWithPause();
     } else {
       this.handleGameOver();
     }
@@ -695,7 +740,22 @@ class GameScene extends Phaser.Scene {
   handleWin() {
     this.sounds.fanfare.play();
     this.currentBubbleCount += 2;  // Increase difficulty
-    this.scene.restart({ bubbleCount: this.currentBubbleCount });
+    this.restartScenarioWithPause();
+  }
+
+  /**
+   * Restart scenario with 2-second pause and player size reset
+   */
+  restartScenarioWithPause() {
+    this.isPaused = true;
+    
+    // Wait 2 seconds before restarting
+    this.time.delayedCall(2000, () => {
+      this.isPaused = false;
+      // Reset player bubble size to 30 pixels
+      this.playerBubble.size = 30;
+      this.scene.restart({ bubbleCount: this.currentBubbleCount });
+    });
   }
 
   handleGameOver() {
@@ -721,6 +781,8 @@ class GameScene extends Phaser.Scene {
     for (let i = 0; i < targetCount; i++) {
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
+        this.playerBubble.x,
+        this.playerBubble.y,
         this.aiBubbles.length
       );
       if (bubble) {
@@ -734,6 +796,8 @@ class GameScene extends Phaser.Scene {
     while (this.aiBubbles.length < targetCount) {
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
+        this.playerBubble.x,
+        this.playerBubble.y,
         this.aiBubbles.length
       );
       if (bubble) {
@@ -767,13 +831,16 @@ class HUD {
   }
 
   createUI() {
+    // Display score and lives outside Game_World in 24pt Arial/Helvetica
     this.scoreText = this.scene.add.text(10, 10, 'Score: 0', {
-      fontSize: '24px',
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
 
     this.livesText = this.scene.add.text(10, 40, 'Lives: 3', {
-      fontSize: '24px',
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
   }
@@ -855,7 +922,7 @@ Web app manifest:
   "description": "Grow your bubble by consuming smaller ones",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
+  "background_color": "#808080",
   "theme_color": "#4a90e2",
   "icons": [
     {
@@ -888,6 +955,8 @@ The game state is managed entirely within the GameScene instance:
   worldHeight: 600,           // Game world height in pixels
   isGameOver: boolean,        // Game over state flag
   currentBubbleCount: number, // Current target bubble count (starts at 10, +2 per reset)
+  gameWorldBackground: object, // Black background rectangle for Game_World
+  isPaused: boolean,          // Pause state for scenario restart (2-second delay)
   sounds: {                   // Sound effect references
     pop: object,              // Pop sound for consumption
     explosion: object,        // Explosion sound for death
@@ -1134,6 +1203,42 @@ For any scene reset event (from winning or losing a life), the "fanfare" sound e
 For any scene reset N (where N >= 1), the target bubble count should equal 10 + (2 * N).
 
 **Validates: Requirements 4.6**
+
+### Property 28: AI Bubble Spawn Distance from Player
+
+For any newly spawned AI bubble with center at (x, y) and player bubble center at (px, py), the distance between centers should be at least 200 pixels.
+
+**Validates: Requirements 4.2**
+
+### Property 29: Scenario Restart Pause Duration
+
+For any scenario restart event (from winning or losing a life), the game should pause for exactly 2 seconds before resuming.
+
+**Validates: Requirements 1.6**
+
+### Property 30: Player Size Reset on Scenario Restart
+
+For any scenario restart event, after the 2-second pause completes, the player bubble size should be reset to 30 pixels.
+
+**Validates: Requirements 1.7**
+
+### Property 31: Screen Background Color
+
+For any game state, the screen background should be rendered as dark gray (#808080).
+
+**Validates: Requirements 5.4**
+
+### Property 32: Game World Background Color
+
+For any game state, the Game_World background should be rendered as black (#000000).
+
+**Validates: Requirements 5.5**
+
+### Property 33: HUD Font Specification
+
+For any game state, the score and lives count should be displayed in 24 point Arial or Helvetica font.
+
+**Validates: Requirements 6.3**
 
 ## Error Handling
 

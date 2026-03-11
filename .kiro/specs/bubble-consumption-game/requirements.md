@@ -29,6 +29,8 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. WHEN the last life is lost, the game is over.
 4. WHEN the Player_Bubble has reached the goal Size of 100 pixels, the Game will clear and the scenario will be restarted.
 5. The Score will be displayed at all times.
+6. WHEN the scenario restarts, THE Game SHALL pause for 2 seconds.
+7. WHEN the 2 second pause completes, THE Game SHALL reduce the Player_Bubble Size to 30 pixels.
 
 ### Requirement 2: Player Bubble Control
 
@@ -60,12 +62,13 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 #### Acceptance Criteria
 
 1. THE Game SHALL spawn AI_Bubbles at random positions within the Game_World
-2. WHILE an AI_Bubble exists, THE Game SHALL move it in a consistent direction at constant velocity
-3. WHEN an AI_Bubble reaches a Game_World boundary, THE Game SHALL reverse its direction
-4. THE Game SHALL assign each AI_Bubble a random Size within a defined range at spawn time
-5. THE Game SHALL spawn 10 AI_Bubbles on the first scene
-6. WHEN a scene is reset (either from winning or losing a life), THE Game SHALL spawn 2 more AI_Bubbles than the previous scene
-7. THE Game SHALL maintain the spawned AI_Bubble count throughout each scene
+2. WHEN an AI_Bubble is spawned, THE Game SHALL position its center at least 200 pixels away from the center of the Player_Bubble
+3. WHILE an AI_Bubble exists, THE Game SHALL move it in a consistent direction at constant velocity
+4. WHEN an AI_Bubble reaches a Game_World boundary, THE Game SHALL reverse its direction
+5. THE Game SHALL assign each AI_Bubble a random Size within a defined range at spawn time
+6. THE Game SHALL spawn 10 AI_Bubbles on the first scene
+7. WHEN a scene is reset (either from winning or losing a life), THE Game SHALL spawn 2 more AI_Bubbles than the previous scene
+8. THE Game SHALL maintain the spawned AI_Bubble count throughout each scene
 
 ### Requirement 5: Visual Representation
 
@@ -76,9 +79,23 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 1. THE Game SHALL render each bubble as a circle with radius proportional to its Size
 2. THE Game SHALL render the Player_Bubble as a gray circle with a blue border whose Size is initially 30 pixels.
 3. THE Game SHALL render AI_Bubbles with random pastel colors with no border and will have Size of between 10 and 70 pixels.
+4. THE Game SHALL render the screen background as dark gray
+5. THE Game SHALL render the Game_World background as black
+
+### Requirement 6: HUD Display
+
+**User Story:** As a player, I want to see my current score and remaining lives at all times, so that I can track my progress and status during gameplay.
+
+#### Acceptance Criteria
+
+1. THE Game SHALL display the Score outside the Game_World
+2. THE Game SHALL display the count of lives outside the Game_World
+3. THE Game SHALL render the Score and lives count in 24 point Arial or Helvetica font
+4. THE Game SHALL update the displayed Score immediately when the Player_Bubble consumes an AI_Bubble
+5. THE Game SHALL update the displayed lives count immediately when a life is lost
 
 
-### Requirement 6: Game Session Management
+### Requirement 7: Game Session Management
 
 **User Story:** As a player, I want to start new games and see my progress, so that I can track my performance.
 
@@ -89,7 +106,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. THE Game SHALL provide a restart option after a Game_Session ends
 4. THE Game SHALL track and display the number of AI_Bubbles consumed during the current Game_Session
 
-### Requirement 7: Progressive Web Application Features
+### Requirement 8: Progressive Web Application Features
 
 **User Story:** As a player, I want to install and play the game offline, so that I can play without an internet connection.
 
@@ -101,7 +118,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 4. THE Game SHALL function without network connectivity after initial installation
 5. THE Game SHALL cache all required assets for offline play
 
-### Requirement 8: Input Handling
+### Requirement 9: Input Handling
 
 **User Story:** As a player, I want to use mouse or touch input, so that I can play on desktop or mobile devices.
 
@@ -112,7 +129,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. THE Game SHALL support continuous movement while mouse button is held or touch is maintained
 4. THE Game SHALL normalize input coordinates across different screen sizes and resolutions
 
-### Requirement 9: Performance Requirements
+### Requirement 10: Performance Requirements
 
 **User Story:** As a player, I want smooth gameplay, so that I can react quickly to game events.
 
@@ -123,7 +140,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. THE Game SHALL detect all Collision events within one frame of occurrence
 4. THE Game SHALL render the Game_World at the device's native resolution up to 1920x1080 pixels
 
-### Requirement 10: Collision Detection
+### Requirement 11: Collision Detection
 
 **User Story:** As a player, I want accurate collision detection, so that the game feels fair and responsive.
 
@@ -134,7 +151,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. WHEN the distance between two bubble centers is less than the sum of their radii, THE Game SHALL register a Collision
 4. THE Game SHALL process all Collision events before rendering the next frame
 
-### Requirement 11: Game Balance
+### Requirement 12: Game Balance
 
 **User Story:** As a player, I want a balanced difficulty curve, so that the game remains challenging as I grow.
 
@@ -145,7 +162,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. THE Game SHALL ensure at least 30% of AI_Bubbles are smaller than the Player_Bubble at any time
 4. THE Game SHALL ensure at least 20% of AI_Bubbles are larger than the Player_Bubble at any time
 
-### Requirement 12: Sound Effects
+### Requirement 13: Sound Effects
 
 **User Story:** As a player, I want audio feedback for game events, so that I have a more engaging and immersive experience.
 

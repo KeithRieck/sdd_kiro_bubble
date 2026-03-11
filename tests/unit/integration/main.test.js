@@ -47,7 +47,7 @@ describe('Main Integration', () => {
     expect(gameConfig.type).toBe('AUTO');
     expect(gameConfig.width).toBe(800);
     expect(gameConfig.height).toBe(600);
-    expect(gameConfig.backgroundColor).toBe('#000000');
+    expect(gameConfig.backgroundColor).toBe('#808080');  // Dark gray screen background
     
     // Verify scenes are configured
     expect(gameConfig.scene).toBeDefined();

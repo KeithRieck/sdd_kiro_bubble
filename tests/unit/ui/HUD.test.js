@@ -45,12 +45,14 @@ describe('HUD', () => {
     const hud = new HUD(mockScene);
 
     expect(mockScene.add.text).toHaveBeenCalledWith(10, 10, 'Score: 0', {
-      fontSize: '24px',
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
 
     expect(mockScene.add.text).toHaveBeenCalledWith(10, 40, 'Lives: 3', {
-      fontSize: '24px',
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
   });

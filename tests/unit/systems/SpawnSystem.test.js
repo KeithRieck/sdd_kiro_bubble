@@ -125,9 +125,11 @@ describe('SpawnSystem', () => {
     it('should generate position with proper margin for size 20', () => {
       const size = 20;
       const margin = size / 2 + 10; // 20
+      const playerX = 400;
+      const playerY = 300;
       
       for (let i = 0; i < 20; i++) {
-        const pos = spawnSystem.getRandomPosition(size);
+        const pos = spawnSystem.getRandomPosition(size, playerX, playerY);
         expect(pos.x).toBeGreaterThanOrEqual(margin);
         expect(pos.x).toBeLessThanOrEqual(800 - margin);
         expect(pos.y).toBeGreaterThanOrEqual(margin);
@@ -138,13 +140,29 @@ describe('SpawnSystem', () => {
     it('should generate position with proper margin for size 70', () => {
       const size = 70;
       const margin = size / 2 + 10; // 45
+      const playerX = 400;
+      const playerY = 300;
       
       for (let i = 0; i < 20; i++) {
-        const pos = spawnSystem.getRandomPosition(size);
+        const pos = spawnSystem.getRandomPosition(size, playerX, playerY);
         expect(pos.x).toBeGreaterThanOrEqual(margin);
         expect(pos.x).toBeLessThanOrEqual(800 - margin);
         expect(pos.y).toBeGreaterThanOrEqual(margin);
         expect(pos.y).toBeLessThanOrEqual(600 - margin);
+      }
+    });
+
+    it('should generate position at least 200 pixels from player', () => {
+      const size = 20;
+      const playerX = 400;
+      const playerY = 300;
+      
+      for (let i = 0; i < 20; i++) {
+        const pos = spawnSystem.getRandomPosition(size, playerX, playerY);
+        const dx = pos.x - playerX;
+        const dy = pos.y - playerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        expect(distance).toBeGreaterThanOrEqual(200);
       }
     });
   });
@@ -170,24 +188,24 @@ describe('SpawnSystem', () => {
 
   describe('spawnBubble', () => {
     it('should spawn bubble when below capacity', () => {
-      const bubble = spawnSystem.spawnBubble(30, 5);
+      const bubble = spawnSystem.spawnBubble(30, 400, 300, 5);
       expect(bubble).not.toBeNull();
       expect(bubble.size).toBeGreaterThanOrEqual(10);
       expect(bubble.size).toBeLessThanOrEqual(70);
     });
 
     it('should return null when at capacity', () => {
-      const bubble = spawnSystem.spawnBubble(30, 10);
+      const bubble = spawnSystem.spawnBubble(30, 400, 300, 10);
       expect(bubble).toBeNull();
     });
 
     it('should return null when over capacity', () => {
-      const bubble = spawnSystem.spawnBubble(30, 15);
+      const bubble = spawnSystem.spawnBubble(30, 400, 300, 15);
       expect(bubble).toBeNull();
     });
 
     it('should spawn bubble with valid position', () => {
-      const bubble = spawnSystem.spawnBubble(30, 0);
+      const bubble = spawnSystem.spawnBubble(30, 400, 300, 0);
       expect(bubble).not.toBeNull();
       
       const margin = bubble.size / 2 + 10;
@@ -198,7 +216,7 @@ describe('SpawnSystem', () => {
     });
 
     it('should spawn bubble with valid velocity', () => {
-      const bubble = spawnSystem.spawnBubble(30, 0);
+      const bubble = spawnSystem.spawnBubble(30, 400, 300, 0);
       expect(bubble).not.toBeNull();
       
       const speed = Math.sqrt(bubble.velocityX ** 2 + bubble.velocityY ** 2);
@@ -211,7 +229,7 @@ describe('SpawnSystem', () => {
       
       // Spawn multiple bubbles and collect sizes
       for (let i = 0; i < 20; i++) {
-        const bubble = spawnSystem.spawnBubble(40, i);
+        const bubble = spawnSystem.spawnBubble(40, 400, 300, i);
         if (bubble) {
           sizes.add(bubble.size);
         }
@@ -220,15 +238,29 @@ describe('SpawnSystem', () => {
       // Should have some variety in sizes (at least 3 different sizes)
       expect(sizes.size).toBeGreaterThanOrEqual(3);
     });
+
+    it('should spawn bubble at least 200 pixels from player', () => {
+      const playerX = 400;
+      const playerY = 300;
+      const bubble = spawnSystem.spawnBubble(30, playerX, playerY, 0);
+      expect(bubble).not.toBeNull();
+      
+      const dx = bubble.x - playerX;
+      const dy = bubble.y - playerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      expect(distance).toBeGreaterThanOrEqual(200);
+    });
   });
 
   describe('integration', () => {
     it('should maintain consistent behavior across multiple spawns', () => {
       const playerSize = 40;
+      const playerX = 400;
+      const playerY = 300;
       const bubbles = [];
       
       for (let i = 0; i < 10; i++) {
-        const bubble = spawnSystem.spawnBubble(playerSize, i);
+        const bubble = spawnSystem.spawnBubble(playerSize, playerX, playerY, i);
         if (bubble) {
           bubbles.push(bubble);
         }
@@ -244,29 +276,37 @@ describe('SpawnSystem', () => {
         expect(bubble.x).toBeLessThan(800);
         expect(bubble.y).toBeGreaterThan(0);
         expect(bubble.y).toBeLessThan(600);
+        
+        // Check distance from player
+        const dx = bubble.x - playerX;
+        const dy = bubble.y - playerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        expect(distance).toBeGreaterThanOrEqual(200);
       });
     });
 
     it('should work with difficulty progression', () => {
+      const playerX = 400;
+      const playerY = 300;
       expect(spawnSystem.getTargetCount()).toBe(10);
       
       // Spawn initial set
       for (let i = 0; i < 10; i++) {
-        const bubble = spawnSystem.spawnBubble(30, i);
+        const bubble = spawnSystem.spawnBubble(30, playerX, playerY, i);
         expect(bubble).not.toBeNull();
       }
       
       // Should be at capacity
-      expect(spawnSystem.spawnBubble(30, 10)).toBeNull();
+      expect(spawnSystem.spawnBubble(30, playerX, playerY, 10)).toBeNull();
       
       // Increment difficulty
       spawnSystem.incrementDifficulty();
       expect(spawnSystem.getTargetCount()).toBe(12);
       
       // Should be able to spawn 2 more
-      expect(spawnSystem.spawnBubble(30, 10)).not.toBeNull();
-      expect(spawnSystem.spawnBubble(30, 11)).not.toBeNull();
-      expect(spawnSystem.spawnBubble(30, 12)).toBeNull();
+      expect(spawnSystem.spawnBubble(30, playerX, playerY, 10)).not.toBeNull();
+      expect(spawnSystem.spawnBubble(30, playerX, playerY, 11)).not.toBeNull();
+      expect(spawnSystem.spawnBubble(30, playerX, playerY, 12)).toBeNull();
     });
   });
 });

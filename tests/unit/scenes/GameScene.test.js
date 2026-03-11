@@ -21,6 +21,9 @@ describe('GameScene', () => {
 
     // Mock add system for creating game objects
     mockAdd = {
+      rectangle: vi.fn((x, y, width, height, color) => ({
+        setOrigin: vi.fn()
+      })),
       graphics: vi.fn(() => ({
         clear: vi.fn(),
         fillStyle: vi.fn(),
@@ -69,6 +72,7 @@ describe('GameScene', () => {
       expect(gameScene.score).toBe(0);
       expect(gameScene.currentBubbleCount).toBe(10);
       expect(gameScene.aiBubbles).toEqual([]);
+      expect(gameScene.isPaused).toBe(false);
     });
 
     it('should have the correct scene key', () => {
@@ -78,6 +82,37 @@ describe('GameScene', () => {
 
     it('should be a Phaser Scene', () => {
       expect(gameScene).toBeInstanceOf(Phaser.Scene);
+    });
+  });
+
+  describe('Initial Game State', () => {
+    it('should start with 3 lives', () => {
+      gameScene.create();
+      expect(gameScene.lives).toBe(3);
+    });
+
+    it('should start with player bubble at center with size 30', () => {
+      gameScene.create();
+      expect(gameScene.playerBubble.x).toBe(400);
+      expect(gameScene.playerBubble.y).toBe(300);
+      expect(gameScene.playerBubble.size).toBe(30);
+    });
+
+    it('should spawn 10 AI bubbles initially', () => {
+      gameScene.create();
+      expect(gameScene.aiBubbles.length).toBe(10);
+    });
+
+    it('should have black Game_World background', () => {
+      const rectangleMock = vi.fn((x, y, width, height, color) => ({
+        setOrigin: vi.fn()
+      }));
+      gameScene.add.rectangle = rectangleMock;
+      
+      gameScene.create();
+      
+      expect(gameScene.gameWorldBackground).toBeDefined();
+      expect(rectangleMock).toHaveBeenCalledWith(0, 0, 800, 600, 0x000000);
     });
   });
 
@@ -105,6 +140,20 @@ describe('GameScene', () => {
   });
 
   describe('create()', () => {
+    it('should create black Game_World background', () => {
+      // Mock the add.rectangle method
+      const rectangleMock = vi.fn((x, y, width, height, color) => ({
+        setOrigin: vi.fn()
+      }));
+      gameScene.add.rectangle = rectangleMock;
+      
+      gameScene.create();
+      
+      // Verify rectangle was created with correct parameters
+      expect(rectangleMock).toHaveBeenCalledWith(0, 0, 800, 600, 0x000000);
+      expect(gameScene.gameWorldBackground).toBeDefined();
+    });
+
     it('should load sound effects', () => {
       gameScene.create();
       
@@ -239,14 +288,21 @@ describe('GameScene', () => {
     });
 
     it('should handle consumption when player is larger', () => {
+      // Clear all AI bubbles and add just one for isolated testing
+      gameScene.aiBubbles.forEach(bubble => {
+        if (bubble.graphics) {
+          bubble.graphics.destroy();
+        }
+      });
+      gameScene.aiBubbles = [];
+      
+      // Create a single small bubble at the player's position
+      const smallBubble = new AIBubble(gameScene, 100, 100, 20, 0, 0);
+      gameScene.aiBubbles.push(smallBubble);
+      
       gameScene.playerBubble.size = 50;
       gameScene.playerBubble.x = 100;
       gameScene.playerBubble.y = 100;
-      
-      const smallBubble = gameScene.aiBubbles[0];
-      smallBubble.size = 20;
-      smallBubble.x = 100;
-      smallBubble.y = 100;
       
       const initialScore = gameScene.score;
       const initialBubbleCount = gameScene.aiBubbles.length;
