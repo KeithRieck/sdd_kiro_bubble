@@ -91,7 +91,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Draw colored circle with no border using Phaser Graphics
     - _Requirements: 5.3_
 
-- [-] 5. Implement CollisionSystem
+- [x] 5. Implement CollisionSystem
   - [x] 5.1 Create CollisionSystem.js with static methods
     - Implement checkCollision() using circle-to-circle distance
     - Implement resolveCollision() returning action and data
@@ -351,40 +351,40 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test BootScene → PreloaderScene → GameScene transitions
 
 - [~] 18. Implement PWA features
-  - [~] 18.1 Create service-worker.js
+  - [ ] 18.1 Create service-worker.js
     - Define cache name and URLs to cache
     - Implement install event handler to cache assets
     - Implement fetch event handler for cache-first strategy
     - _Requirements: 7.1, 7.4, 7.5_
   
-  - [~] 18.2 Write unit test for service worker
+  - [ ] 18.2 Write unit test for service worker
     - Test cache storage
     - Test offline functionality
   
-  - [~] 18.3 Update index.html with service worker registration
+  - [ ] 18.3 Update index.html with service worker registration
     - Add service worker registration script
     - Add manifest link
     - _Requirements: 7.1, 7.2_
   
-  - [~] 18.4 Write unit test for PWA configuration
+  - [ ] 18.4 Write unit test for PWA configuration
     - Test manifest validity
     - Test service worker registration
 
-- [~] 19. Create placeholder assets
-  - [~] 19.1 Create placeholder logo.png
+- [ ] 19. Create placeholder assets
+  - [ ] 19.1 Create placeholder logo.png
     - Create simple 200x200 logo image
     - _Requirements: 7.5_
   
-  - [~] 19.2 Create placeholder sound files
+  - [ ] 19.2 Create placeholder sound files
     - Create or source pop.mp3, explosion.mp3, fanfare.mp3
     - _Requirements: 12.4_
   
-  - [~] 19.3 Create PWA icons
+  - [ ] 19.3 Create PWA icons
     - Create icon-192.png and icon-512.png
     - _Requirements: 7.2_
 
-- [~] 20. Final integration and testing
-  - [~] 20.1 Test complete game flow
+- [ ] 20. Final integration and testing
+  - [ ] 20.1 Test complete game flow
     - Verify all scenes transition correctly
     - Verify player can consume bubbles and grow
     - Verify death and life system works
@@ -392,20 +392,20 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Verify progressive difficulty increases bubble count
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 3.2, 3.3, 3.4, 4.6_
   
-  - [~] 20.2 Run all property tests with extended iterations
+  - [ ] 20.2 Run all property tests with extended iterations
     - Run all 27 property tests with 1000 iterations each
   
-  - [~] 20.3 Test PWA installation and offline functionality
+  - [ ] 20.3 Test PWA installation and offline functionality
     - Verify game can be installed
     - Verify game works offline after installation
     - _Requirements: 7.3, 7.4_
   
-  - [~] 20.4 Test cross-device compatibility
+  - [ ] 20.4 Test cross-device compatibility
     - Test mouse input on desktop
     - Test touch input on mobile/tablet
     - _Requirements: 8.1, 8.2, 8.4_
 
-- [~] 21. Final checkpoint - Ensure all tests pass
+- [ ] 21. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
