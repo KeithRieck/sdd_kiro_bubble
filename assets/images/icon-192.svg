@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="rgb(74,144,226)"/>
+  <circle cx="96" cy="96" r="64" fill="white" opacity="0.8"/>
+  <text x="96" y="96" font-size="48" text-anchor="middle" dominant-baseline="middle" fill="rgb(74,144,226)">B</text>
+</svg>

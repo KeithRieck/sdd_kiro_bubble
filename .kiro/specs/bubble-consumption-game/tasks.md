@@ -13,192 +13,192 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - Set up basic HTML structure with game container
   - _Requirements: 7.2, 7.3_
 
-- [ ] 2. Implement abstract Bubble base class
-  - [-] 2.1 Create Bubble.js with constructor and common properties
+- [x] 2. Implement abstract Bubble base class
+  - [x] 2.1 Create Bubble.js with constructor and common properties
     - Implement constructor with scene, x, y, size parameters
     - Add abstract class check to prevent direct instantiation
     - Implement getRadius() method
     - Implement isWithinBounds() and constrainToBounds() methods
     - _Requirements: 2.3, 2.4, 5.1_
   
-  - [~] 2.2 Write property test for boundary constraint
+  - [x] 2.2 Write property test for boundary constraint
     - **Property 1: Player Bubble Boundary Constraint**
     - **Validates: Requirements 2.3, 2.4**
   
-  - [~] 2.3 Add abstract update() and render() methods
+  - [x] 2.3 Add abstract update() and render() methods
     - Define abstract methods that throw errors if not overridden
     - _Requirements: 5.1_
 
-- [ ] 3. Implement PlayerBubble class
-  - [~] 3.1 Create PlayerBubble.js extending Bubble
+- [x] 3. Implement PlayerBubble class
+  - [x] 3.1 Create PlayerBubble.js extending Bubble
     - Implement constructor with default size 30
     - Add targetX and targetY properties
     - Implement getSpeed() method (inversely proportional to size)
     - _Requirements: 2.2, 6.1_
   
-  - [~] 3.2 Write property test for speed calculation
+  - [x] 3.2 Write property test for speed calculation
     - **Property 2: Speed Inversely Proportional to Size**
     - **Validates: Requirements 2.2**
   
-  - [~] 3.3 Implement update() method with movement logic
+  - [x] 3.3 Implement update() method with movement logic
     - Calculate direction vector to target
     - Apply speed-based movement with delta time
     - Constrain position to world boundaries
     - _Requirements: 2.1, 2.3, 2.4_
   
-  - [~] 3.4 Write property test for input target setting
+  - [x] 3.4 Write property test for input target setting
     - **Property 3: Input Sets Movement Target**
     - **Validates: Requirements 2.1, 8.1, 8.2**
   
-  - [~] 3.5 Implement setTarget() method
+  - [x] 3.5 Implement setTarget() method
     - Set targetX and targetY from input coordinates
     - _Requirements: 2.1_
   
-  - [~] 3.6 Implement grow() method
+  - [x] 3.6 Implement grow() method
     - Calculate growth as floor(sqrt(consumedSize))
     - Cap size at 100 pixels
     - _Requirements: 3.4_
   
-  - [~] 3.7 Write property test for growth calculation
+  - [x] 3.7 Write property test for growth calculation
     - **Property 6: Growth Calculation**
     - **Validates: Requirements 3.4**
   
-  - [~] 3.8 Implement render() method
+  - [x] 3.8 Implement render() method
     - Draw gray circle with blue border using Phaser Graphics
     - _Requirements: 5.2_
 
-- [ ] 4. Implement AIBubble class
-  - [~] 4.1 Create AIBubble.js extending Bubble
+- [x] 4. Implement AIBubble class
+  - [x] 4.1 Create AIBubble.js extending Bubble
     - Implement constructor with velocityX and velocityY parameters
     - Add color property with pastel color generation
     - Implement generatePastelColor() and hslToHex() helper methods
     - _Requirements: 4.1, 4.2, 5.3_
   
-  - [~] 4.2 Implement update() method with boundary bouncing
+  - [x] 4.2 Implement update() method with boundary bouncing
     - Update position based on velocity and delta time
     - Reverse velocity components when hitting boundaries
     - _Requirements: 4.2, 4.3_
   
-  - [~] 4.3 Write property test for boundary bouncing
+  - [x] 4.3 Write property test for boundary bouncing
     - **Property 11: AI Bubble Boundary Bouncing**
     - **Validates: Requirements 4.3**
   
-  - [~] 4.4 Write property test for constant velocity
+  - [x] 4.4 Write property test for constant velocity
     - **Property 12: AI Bubble Constant Velocity**
     - **Validates: Requirements 4.2**
   
-  - [~] 4.5 Implement render() method
+  - [x] 4.5 Implement render() method
     - Draw colored circle with no border using Phaser Graphics
     - _Requirements: 5.3_
 
-- [ ] 5. Implement CollisionSystem
-  - [~] 5.1 Create CollisionSystem.js with static methods
+- [-] 5. Implement CollisionSystem
+  - [x] 5.1 Create CollisionSystem.js with static methods
     - Implement checkCollision() using circle-to-circle distance
     - Implement resolveCollision() returning action and data
     - _Requirements: 3.1, 10.1, 10.2, 10.3_
   
-  - [~] 5.2 Write property test for collision detection
+  - [x] 5.2 Write property test for collision detection
     - **Property 4: Collision Detection by Distance**
     - **Validates: Requirements 10.1, 10.2, 10.3**
   
-  - [~] 5.3 Write property test for consumption score increase
+  - [x] 5.3 Write property test for consumption score increase
     - **Property 5: Consumption Increases Score**
     - **Validates: Requirements 3.2, 6.4**
   
-  - [~] 5.4 Write property test for area conservation
+  - [x] 5.4 Write property test for area conservation
     - **Property 7: Area Conservation**
     - **Validates: Requirements 3.5**
   
-  - [~] 5.5 Write property test for death on larger collision
+  - [x] 5.5 Write property test for death on larger collision
     - **Property 8: Death on Larger Collision**
     - **Validates: Requirements 3.3**
 
-- [~] 6. Checkpoint - Ensure core entity tests pass
+- [x] 6. Checkpoint - Ensure core entity tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement SpawnSystem
-  - [~] 7.1 Create SpawnSystem.js with constructor
+- [~] 7. Implement SpawnSystem
+  - [x] 7.1 Create SpawnSystem.js with constructor
     - Initialize with scene, worldWidth, worldHeight, initialBubbleCount
     - Add targetBubbleCount property (starts at 10)
     - Implement incrementDifficulty() and getTargetCount() methods
     - _Requirements: 4.5, 4.6_
   
-  - [~] 7.2 Implement calculateSizeRange() method
+  - [x] 7.2 Implement calculateSizeRange() method
     - Calculate min as max(10, 0.5 * playerSize)
     - Calculate max as min(70, 1.5 * playerSize)
     - _Requirements: 4.4, 11.1, 11.2_
   
-  - [~] 7.3 Write property test for AI bubble size range
+  - [x] 7.3 Write property test for AI bubble size range
     - **Property 15: AI Bubble Size Range**
     - **Validates: Requirements 4.4, 5.3**
   
-  - [~] 7.4 Write property test for dynamic size scaling
+  - [x] 7.4 Write property test for dynamic size scaling
     - **Property 16: Dynamic Size Scaling**
     - **Validates: Requirements 11.1, 11.2**
   
-  - [~] 7.5 Implement generateBalancedSize() method
+  - [x] 7.5 Implement generateBalancedSize() method
     - 30% chance for size < playerSize
     - 50% chance for size ≈ playerSize
     - 20% chance for size > playerSize
     - _Requirements: 11.3, 11.4_
   
-  - [~] 7.6 Write property test for smaller bubble distribution
+  - [x] 7.6 Write property test for smaller bubble distribution
     - **Property 17: Smaller Bubble Distribution**
     - **Validates: Requirements 11.3**
   
-  - [~] 7.7 Write property test for larger bubble distribution
+  - [x] 7.7 Write property test for larger bubble distribution
     - **Property 18: Larger Bubble Distribution**
     - **Validates: Requirements 11.4**
   
-  - [~] 7.8 Implement getRandomPosition() and getRandomVelocity() methods
+  - [x] 7.8 Implement getRandomPosition() and getRandomVelocity() methods
     - Generate position with margin from edges
     - Generate velocity with random angle and speed 50-150 px/s
     - _Requirements: 4.1, 4.2_
   
-  - [~] 7.9 Write property test for spawn position
+  - [x] 7.9 Write property test for spawn position
     - **Property 14: AI Bubble Spawn Position**
     - **Validates: Requirements 4.1**
   
-  - [~] 7.10 Implement spawnBubble() method
+  - [x] 7.10 Implement spawnBubble() method
     - Check if at capacity
     - Create AIBubble with balanced size and random position/velocity
     - _Requirements: 4.1, 4.5, 4.7_
 
-- [ ] 8. Implement HUD class
-  - [~] 8.1 Create HUD.js with constructor
+- [~] 8. Implement HUD class
+  - [x] 8.1 Create HUD.js with constructor
     - Create score and lives text elements using Phaser
     - Position at top-left corner
     - _Requirements: 1.5_
   
-  - [~] 8.2 Write property test for score visibility
+  - [x] 8.2 Write property test for score visibility
     - **Property 20: Score Always Visible**
     - **Validates: Requirements 1.5**
   
-  - [~] 8.3 Implement render() method
+  - [x] 8.3 Implement render() method
     - Update score and lives text displays
     - _Requirements: 1.5_
   
-  - [~] 8.4 Implement showGameOver() method
+  - [x] 8.4 Implement showGameOver() method
     - Display final score and restart option
     - Set up click handler for restart
     - _Requirements: 6.2, 6.3_
   
-  - [~] 8.5 Write property test for game over display
+  - [x] 8.5 Write property test for game over display
     - **Property 21: Game Over Display**
     - **Validates: Requirements 6.2, 6.3**
 
-- [ ] 9. Implement BootScene
-  - [~] 9.1 Create BootScene.js
+- [~] 9. Implement BootScene
+  - [x] 9.1 Create BootScene.js
     - Implement preload() to load logo image
     - Implement create() to transition to PreloaderScene
     - _Requirements: 7.5_
   
-  - [~] 9.2 Write unit test for BootScene
+  - [x] 9.2 Write unit test for BootScene
     - Test logo loading
     - Test scene transition to PreloaderScene
 
-- [ ] 10. Implement PreloaderScene
-  - [~] 10.1 Create PreloaderScene.js
+- [~] 10. Implement PreloaderScene
+  - [x] 10.1 Create PreloaderScene.js
     - Display logo in preload()
     - Create progress bar graphics
     - Load sound effects (pop, explosion, fanfare)
@@ -206,26 +206,26 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Transition to GameScene on complete
     - _Requirements: 12.4, 7.5_
   
-  - [~] 10.2 Write unit test for PreloaderScene
+  - [x] 10.2 Write unit test for PreloaderScene
     - Test asset loading
     - Test progress bar updates
     - Test scene transition to GameScene
 
-- [~] 11. Checkpoint - Ensure scene and UI tests pass
+- [x] 11. Checkpoint - Ensure scene and UI tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 12. Implement GameScene core structure
-  - [~] 12.1 Create GameScene.js with constructor and properties
+- [~] 12. Implement GameScene core structure
+  - [x] 12.1 Create GameScene.js with constructor and properties
     - Initialize worldWidth (800), worldHeight (600)
     - Initialize lives (3), score (0), currentBubbleCount (10)
     - Add properties for playerBubble, aiBubbles array, spawnSystem, hud, sounds
     - _Requirements: 1.1, 2.3, 6.1_
   
-  - [~] 12.2 Implement init() method
+  - [x] 12.2 Implement init() method
     - Preserve bubbleCount across scene restarts
     - _Requirements: 4.6_
   
-  - [~] 12.3 Implement create() method
+  - [x] 12.3 Implement create() method
     - Initialize game state (lives, score)
     - Load sound effects
     - Create PlayerBubble at center
@@ -235,13 +235,13 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Create HUD
     - _Requirements: 1.1, 6.1, 12.4_
   
-  - [~] 12.4 Write unit test for initial game state
+  - [x] 12.4 Write unit test for initial game state
     - Test 3 lives at start
     - Test player bubble at center with size 30
     - Test 10 AI bubbles spawned initially
 
-- [ ] 13. Implement GameScene game loop
-  - [~] 13.1 Implement update() method
+- [~] 13. Implement GameScene game loop
+  - [x] 13.1 Implement update() method
     - Update player bubble
     - Update all AI bubbles
     - Call checkCollisions()
@@ -250,96 +250,96 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Call render()
     - _Requirements: 1.4, 9.1, 9.2_
   
-  - [~] 13.2 Write property test for continuous movement
+  - [x] 13.2 Write property test for continuous movement
     - **Property 22: Continuous Movement**
     - **Validates: Requirements 8.3**
   
-  - [~] 13.3 Implement checkCollisions() method
+  - [x] 13.3 Implement checkCollisions() method
     - Loop through AI bubbles
     - Check collision with player using CollisionSystem
     - Handle consumption (increase score, grow player, remove AI, play pop sound)
     - Handle death (play explosion sound, call handleDeath())
     - _Requirements: 3.1, 3.2, 10.4, 12.1, 12.2_
   
-  - [~] 13.4 Write property test for pop sound on consumption
+  - [x] 13.4 Write property test for pop sound on consumption
     - **Property 24: Pop Sound on Consumption**
     - **Validates: Requirements 12.1**
   
-  - [~] 13.5 Write property test for explosion sound on death
+  - [x] 13.5 Write property test for explosion sound on death
     - **Property 25: Explosion Sound on Death**
     - **Validates: Requirements 12.2**
   
-  - [~] 13.4 Implement maintainBubbleCount() method
+  - [x] 13.4 Implement maintainBubbleCount() method
     - Spawn new bubbles until reaching target count
     - _Requirements: 4.7_
   
-  - [~] 13.5 Write property test for bubble count invariant
+  - [x] 13.5 Write property test for bubble count invariant
     - **Property 13: AI Bubble Count Invariant**
     - **Validates: Requirements 4.5, 4.6, 4.7**
   
-  - [~] 13.6 Implement render() method
+  - [x] 13.6 Implement render() method
     - Render all AI bubbles
     - Render player bubble
     - Update HUD
     - _Requirements: 5.1, 5.2, 5.3_
   
-  - [~] 13.7 Write property test for bubble radius rendering
+  - [x] 13.7 Write property test for bubble radius rendering
     - **Property 19: Bubble Radius Rendering**
     - **Validates: Requirements 5.1**
 
-- [ ] 14. Implement GameScene state transitions
-  - [~] 14.1 Implement handleDeath() method
+- [~] 14. Implement GameScene state transitions
+  - [x] 14.1 Implement handleDeath() method
     - Decrement lives
     - If lives > 0: play fanfare, increment currentBubbleCount by 2, restart scene
     - If lives = 0: call handleGameOver()
     - _Requirements: 1.2, 3.3, 4.6, 12.3_
   
-  - [~] 14.2 Write property test for life decrement
+  - [x] 14.2 Write property test for life decrement
     - **Property 9: Life Decrement**
     - **Validates: Requirements 1.2**
   
-  - [~] 14.3 Write property test for fanfare sound on reset
+  - [x] 14.3 Write property test for fanfare sound on reset
     - **Property 26: Fanfare Sound on Level Reset**
     - **Validates: Requirements 12.3**
   
-  - [~] 14.4 Write property test for progressive bubble count
+  - [x] 14.4 Write property test for progressive bubble count
     - **Property 27: Progressive Bubble Count**
     - **Validates: Requirements 4.6**
   
-  - [~] 14.5 Implement handleWin() method
+  - [x] 14.5 Implement handleWin() method
     - Play fanfare sound
     - Increment currentBubbleCount by 2
     - Restart scene with new bubble count
     - _Requirements: 1.4, 4.6, 12.3_
   
-  - [~] 14.6 Write property test for win condition reset
+  - [x] 14.6 Write property test for win condition reset
     - **Property 10: Win Condition Reset**
     - **Validates: Requirements 1.4**
   
-  - [~] 14.7 Implement handleGameOver() method
+  - [x] 14.7 Implement handleGameOver() method
     - Pause scene
     - Show game over display via HUD
     - _Requirements: 1.3, 6.2, 6.3_
 
-- [ ] 15. Implement GameScene input handling
-  - [~] 15.1 Implement setupInput() method
+- [~] 15. Implement GameScene input handling
+  - [x] 15.1 Implement setupInput() method
     - Add pointermove listener to set player target when pointer is down
     - Add pointerdown listener to set player target
     - _Requirements: 2.1, 8.1, 8.2, 8.3_
   
-  - [~] 15.2 Write property test for input coordinate normalization
+  - [x] 15.2 Write property test for input coordinate normalization
     - **Property 23: Input Coordinate Normalization**
     - **Validates: Requirements 8.4**
   
-  - [~] 15.3 Implement spawnInitialBubbles() helper method
+  - [x] 15.3 Implement spawnInitialBubbles() helper method
     - Spawn bubbles up to target count
     - _Requirements: 4.5_
 
-- [~] 16. Checkpoint - Ensure GameScene tests pass
+- [x] 16. Checkpoint - Ensure GameScene tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 17. Create main.js and wire everything together
-  - [~] 17.1 Create main.js with Phaser configuration
+- [~] 17. Create main.js and wire everything together
+  - [x] 17.1 Create main.js with Phaser configuration
     - Import all scene classes
     - Configure Phaser with 800x600 dimensions, black background
     - Set scene array: [BootScene, PreloaderScene, GameScene]
@@ -347,10 +347,10 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Create Phaser.Game instance
     - _Requirements: 2.3, 9.1_
   
-  - [~] 17.2 Write integration test for scene flow
+  - [x] 17.2 Write integration test for scene flow
     - Test BootScene → PreloaderScene → GameScene transitions
 
-- [ ] 18. Implement PWA features
+- [~] 18. Implement PWA features
   - [~] 18.1 Create service-worker.js
     - Define cache name and URLs to cache
     - Implement install event handler to cache assets
@@ -370,7 +370,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test manifest validity
     - Test service worker registration
 
-- [ ] 19. Create placeholder assets
+- [~] 19. Create placeholder assets
   - [~] 19.1 Create placeholder logo.png
     - Create simple 200x200 logo image
     - _Requirements: 7.5_
@@ -383,7 +383,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Create icon-192.png and icon-512.png
     - _Requirements: 7.2_
 
-- [ ] 20. Final integration and testing
+- [~] 20. Final integration and testing
   - [~] 20.1 Test complete game flow
     - Verify all scenes transition correctly
     - Verify player can consume bubbles and grow
