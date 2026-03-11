@@ -17,9 +17,9 @@ All tasks (18-21) have been successfully completed. The bubble consumption game 
 - ✅ Logo image created (SVG format, 200x200)
 - ✅ PWA icons created (SVG format, 192x192 and 512x512)
 - ✅ Sound effects created (WAV format):
-  - pop.wav (100ms) - for bubble consumption
+  - pop.mp3 (100ms) - for bubble consumption
   - explosion.wav (200ms) - for player death
-  - fanfare.wav (300ms) - for level completion
+  - fanfare.mov (300ms) - for level completion
 
 ### Task 20: Final Integration Testing ✅
 - ✅ All 216 tests passing

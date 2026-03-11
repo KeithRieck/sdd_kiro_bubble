@@ -37,7 +37,7 @@ I decide to modify the requirements and design using the chat window:
 * Add a requirement that when a new AI_Bubble is spawned, its center must be at least 200 pixels away from the center of the Player_Bubble.
 * Add a requirement that when the scenario restarts, it will pause for 2 seconds and then will reduce the Player_Bubble size back to 30.
 
-These changes updated the `requirements.md` document.  I had Kiro regenerate the `design.md` and `tasks.md`.  It this point, Kiro told me the five tasks that had been updated and offered to execute the changes for me.  Again, this took a while.  Even if it only ran certain tasks, it appeaers to have executed the tests associated with all tasks.
+These changes updated the `requirements.md` document.  I had Kiro regenerate the `design.md` and `tasks.md`.  It this point, Kiro told me the five tasks that had been updated and offered to execute the changes for me.  Again, this took a while.  Even if it only ran certain tasks, it appeaers to have executed the tests associated with all tasks.  At this point, I've consumed a total of 162.34 credits.
 
 ---
 

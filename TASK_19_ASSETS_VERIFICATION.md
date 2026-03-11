@@ -17,7 +17,7 @@ All placeholder assets for the Bubble Consumption Game have been successfully cr
 ### Sub-task 19.2: Sound Effects ✅
 All sound files are in WAV format (16-bit mono, 44.1kHz):
 
-1. **Pop Sound** (`assets/audio/pop.wav`)
+1. **Pop Sound** (`assets/audio/pop.mp3`)
    - Size: 8,864 bytes
    - Used when: Player consumes a smaller bubble
    - Status: Valid WAVE audio
@@ -27,7 +27,7 @@ All sound files are in WAV format (16-bit mono, 44.1kHz):
    - Used when: Player collides with larger/equal bubble
    - Status: Valid WAVE audio
 
-3. **Fanfare Sound** (`assets/audio/fanfare.wav`)
+3. **Fanfare Sound** (`assets/audio/fanfare.mov`)
    - Size: 26,504 bytes
    - Used when: Level resets (win or lose life)
    - Status: Valid WAVE audio
