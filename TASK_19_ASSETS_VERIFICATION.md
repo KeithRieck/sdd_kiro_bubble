@@ -27,7 +27,7 @@ All sound files are in WAV format (16-bit mono, 44.1kHz):
    - Used when: Player collides with larger/equal bubble
    - Status: Valid WAVE audio
 
-3. **Fanfare Sound** (`assets/audio/fanfare.mov`)
+3. **Fanfare Sound** (`assets/audio/fanfare.mp3`)
    - Size: 26,504 bytes
    - Used when: Level resets (win or lose life)
    - Status: Valid WAVE audio

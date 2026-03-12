@@ -89,7 +89,7 @@ Coverage:    High (all core functionality)
 - ✅ `assets/images/icon-512.svg`
 - ✅ `assets/audio/pop.mp3`
 - ✅ `assets/audio/explosion.wav`
-- ✅ `assets/audio/fanfare.mov`
+- ✅ `assets/audio/fanfare.mp3`
 
 ## Code Quality
 

@@ -36,7 +36,7 @@ class PreloaderScene extends Phaser.Scene {
     // Load sound effects
     this.load.audio('pop', 'assets/audio/pop.mp3');
     this.load.audio('explosion', 'assets/audio/explosion.wav');
-    this.load.audio('fanfare', 'assets/audio/fanfare.mov');
+    this.load.audio('fanfare', 'assets/audio/fanfare.mp3');
   }
 
   /**

@@ -64,7 +64,7 @@ describe('Service Worker', () => {
         '/assets/images/icon-512.svg',
         '/assets/audio/pop.mp3',
         '/assets/audio/explosion.wav',
-        '/assets/audio/fanfare.mov',
+        '/assets/audio/fanfare.mp3',
         'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js'
       ];
 
@@ -96,7 +96,7 @@ describe('Service Worker', () => {
       expect(urlsToCache).toContain('/assets/images/logo.svg');
       expect(urlsToCache).toContain('/assets/audio/pop.mp3');
       expect(urlsToCache).toContain('/assets/audio/explosion.wav');
-      expect(urlsToCache).toContain('/assets/audio/fanfare.mov');
+      expect(urlsToCache).toContain('/assets/audio/fanfare.mp3');
     });
   });
 

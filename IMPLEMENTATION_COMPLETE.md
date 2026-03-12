@@ -19,7 +19,7 @@ All tasks (18-21) have been successfully completed. The bubble consumption game 
 - ✅ Sound effects created (WAV format):
   - pop.mp3 (100ms) - for bubble consumption
   - explosion.wav (200ms) - for player death
-  - fanfare.mov (300ms) - for level completion
+  - fanfare.mp3 (300ms) - for level completion
 
 ### Task 20: Final Integration Testing ✅
 - ✅ All 216 tests passing
