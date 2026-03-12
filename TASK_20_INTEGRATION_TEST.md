@@ -285,7 +285,7 @@ The game uses Phaser's unified pointer system which automatically handles:
 ### Assets Verification
 - ✅ Logo: `assets/images/logo.svg` - EXISTS
 - ✅ Icons: `assets/images/icon-192.svg`, `icon-512.svg` - EXIST
-- ✅ Sounds: `assets/audio/pop.mp3`, `explosion.wav`, `fanfare.mp3` - EXIST
+- ✅ Sounds: `assets/audio/pop.wav`, `explosion.wav`, `fanfare.wav` - EXIST
 
 ### Visual Design Compliance
 - ✅ Screen background: Dark gray (#808080)

@@ -419,7 +419,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - _Requirements: 7.5_
   
   - [x] 19.2 Create placeholder sound files
-    - Create or source pop.mp3, explosion.mp3, fanfare.mp3
+    - Create or source pop.wav, explosion.mp3, fanfare.wav
     - _Requirements: 12.4_
   
   - [x] 19.3 Create PWA icons

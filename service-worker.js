@@ -19,9 +19,9 @@ const urlsToCache = [
   '/assets/images/logo.svg',
   '/assets/images/icon-192.svg',
   '/assets/images/icon-512.svg',
-  '/assets/audio/pop.mp3',
+  '/assets/audio/pop.wav',
   '/assets/audio/explosion.wav',
-  '/assets/audio/fanfare.mp3',
+  '/assets/audio/fanfare.wav',
   'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js'
 ];
 

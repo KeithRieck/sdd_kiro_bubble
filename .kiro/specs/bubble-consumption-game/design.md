@@ -83,9 +83,9 @@ This creates a clear visual separation between the playable area and UI elements
     ├── images/
     │   └── logo.png           # Game logo for preloader
     └── audio/
-        ├── pop.mp3            # Consumption sound effect
+        ├── pop.wav            # Consumption sound effect
         ├── explosion.mp3      # Death sound effect
-        └── fanfare.mp3        # Level reset sound effect
+        └── fanfare.wav        # Level reset sound effect
 ```
 
 ## Components and Interfaces
@@ -175,9 +175,9 @@ class PreloaderScene extends Phaser.Scene {
     });
 
     // Load sound effects
-    this.load.audio('pop', 'assets/audio/pop.mp3');
+    this.load.audio('pop', 'assets/audio/pop.wav');
     this.load.audio('explosion', 'assets/audio/explosion.mp3');
-    this.load.audio('fanfare', 'assets/audio/fanfare.mp3');
+    this.load.audio('fanfare', 'assets/audio/fanfare.wav');
   }
 
   create() {
@@ -892,9 +892,9 @@ const urlsToCache = [
   '/src/systems/MovementSystem.js',
   '/src/ui/HUD.js',
   '/assets/images/logo.png',
-  '/assets/audio/pop.mp3',
+  '/assets/audio/pop.wav',
   '/assets/audio/explosion.mp3',
-  '/assets/audio/fanfare.mp3',
+  '/assets/audio/fanfare.wav',
   'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js'
 ];
 

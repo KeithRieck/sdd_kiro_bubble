@@ -70,9 +70,9 @@ describe('PreloaderScene', () => {
   it('should load all sound effects in preload', () => {
     preloaderScene.preload();
 
-    expect(mockLoad.audio).toHaveBeenCalledWith('pop', 'assets/audio/pop.mp3');
+    expect(mockLoad.audio).toHaveBeenCalledWith('pop', 'assets/audio/pop.wav');
     expect(mockLoad.audio).toHaveBeenCalledWith('explosion', 'assets/audio/explosion.wav');
-    expect(mockLoad.audio).toHaveBeenCalledWith('fanfare', 'assets/audio/fanfare.mp3');
+    expect(mockLoad.audio).toHaveBeenCalledWith('fanfare', 'assets/audio/fanfare.wav');
   });
 
   it('should update progress bar on progress event', () => {
