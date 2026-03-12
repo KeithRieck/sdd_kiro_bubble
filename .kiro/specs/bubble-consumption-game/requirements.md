@@ -9,7 +9,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 - **Game**: The bubble consumption web application
 - **Player_Bubble**: The bubble controlled by the player
 - **AI_Bubble**: A computer-controlled bubble in the game world
-- **Game_World**: The playable area containing all bubbles
+- **Game_World**: The playable area containing all bubbles 
 - **Collision**: Physical contact between two bubbles
 - **Size**: The diameter measurement of a bubble
 - **PWA**: Progressive Web Application with offline capability
@@ -25,12 +25,13 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 #### Acceptance Criteria
 
 1. WHEN the game begins the player will have 3 lives.
-2. WHEN a life is lost, the whole scene will be restarted with 1 less life.
+2. WHEN a life is lost, the whole scenario will be restarted with 1 less life.
 3. WHEN the last life is lost, the game is over.
 4. WHEN the Player_Bubble has reached the goal Size of 100 pixels, the Game will clear and the scenario will be restarted.
 5. The Score will be displayed at all times.
-6. WHEN the scenario restarts, THE Game SHALL pause for 2 seconds.
+6. WHEN the scenario restarts (either from winning by reaching 100 pixels or losing a life), THE Game SHALL pause for 2 seconds.
 7. WHEN the 2 second pause completes, THE Game SHALL reduce the Player_Bubble Size to 30 pixels.
+8. WHEN the scenario restarts, THE Game SHALL spawn initial AI_Bubbles for the new scenario.
 
 ### Requirement 2: Player Bubble Control
 
@@ -67,8 +68,10 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 4. WHEN an AI_Bubble reaches a Game_World boundary, THE Game SHALL reverse its direction
 5. THE Game SHALL assign each AI_Bubble a random Size within a defined range at spawn time
 6. THE Game SHALL spawn 10 AI_Bubbles on the first scene
-7. WHEN a scene is reset (either from winning or losing a life), THE Game SHALL spawn 2 more AI_Bubbles than the previous scene
-8. THE Game SHALL maintain the spawned AI_Bubble count throughout each scene
+7. WHEN a scenario is restarted (either from winning by reaching 100 pixels or losing a life), THE Game SHALL spawn 2 more AI_Bubbles than the previous scenario
+8. THE Game SHALL maintain the spawned AI_Bubble count throughout each scenario
+9. WHEN the scenario restarts, THE Game SHALL first remove all elements from the AI_Bubble list to ensure a clean state
+10. WHEN the scenario restarts, THE Game SHALL spawn the initial AI_Bubbles for the new scenario
 
 ### Requirement 5: Visual Representation
 
@@ -81,6 +84,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. THE Game SHALL render AI_Bubbles with random pastel colors with no border and will have Size of between 10 and 70 pixels.
 4. THE Game SHALL render the screen background as dark gray
 5. THE Game SHALL render the Game_World background as black
+6. THE Game SHALL draw a white rectangle border around the Game_World with 3 pixels thickness and inner dimensions of 800 pixels wide by 600 pixels high
 
 ### Requirement 6: HUD Display
 
@@ -90,7 +94,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 
 1. THE Game SHALL display the Score outside the Game_World
 2. THE Game SHALL display the count of lives outside the Game_World
-3. THE Game SHALL render the Score and lives count in 24 point Arial or Helvetica font
+3. THE Game SHALL render the Score and lives count in 16 point Arial or Helvetica font
 4. THE Game SHALL update the displayed Score immediately when the Player_Bubble consumes an AI_Bubble
 5. THE Game SHALL update the displayed lives count immediately when a life is lost
 

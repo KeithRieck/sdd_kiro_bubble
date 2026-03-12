@@ -6,7 +6,7 @@ The bubble consumption game is a browser-based Progressive Web Application (PWA)
 
 The architecture follows a client-side only approach with no server communication. All game logic, rendering, and state management execute in the browser. The Phaser framework provides the game loop, rendering pipeline, input handling, and physics system.
 
-The visual design features a dark gray screen background with a black Game_World area where gameplay occurs. The HUD displays score and lives outside the Game_World in 24-point Arial/Helvetica font. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds and resets the player bubble to 30 pixels.
+The visual design features a dark gray screen background with a black Game_World area where gameplay occurs. A white 3-pixel border surrounds the Game_World (800x600 inner dimensions). The HUD displays score and lives outside the Game_World in 24-point Arial/Helvetica font. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds, clears the AI_Bubble list, resets the player bubble to 30 pixels, and spawns initial bubbles for the new scenario.
 
 Key design goals:
 - Smooth 30+ FPS gameplay on modern browsers
@@ -14,6 +14,7 @@ Key design goals:
 - Accurate collision detection using circle-to-circle distance calculations
 - Dynamic difficulty scaling based on player bubble size
 - AI bubbles spawn at least 200 pixels away from the player
+- Clean state management with AI_Bubble list clearing on scenario restart
 - Offline-first PWA architecture with service worker caching
 
 ## Architecture
@@ -51,6 +52,7 @@ graph TD
 The game uses a layered visual approach:
 - **Screen Background**: Dark gray (#808080) - the outer browser canvas
 - **Game_World Background**: Black (#000000) - the 800x600 playable area
+- **Game_World Border**: White (#FFFFFF) - 3-pixel thick border with 800x600 inner dimensions
 - **HUD Elements**: Positioned outside Game_World, rendered in 24pt Arial/Helvetica
 - **Bubbles**: Rendered within the black Game_World area
 
@@ -620,6 +622,7 @@ class GameScene extends Phaser.Scene {
     this.sounds = {};
     this.currentBubbleCount = 10;  // Tracks bubble count across scene resets
     this.gameWorldBackground = null;  // Black background for Game_World
+    this.gameWorldBorder = null;  // White border for Game_World
     this.isPaused = false;  // Track pause state for scenario restart
   }
 
@@ -644,6 +647,11 @@ class GameScene extends Phaser.Scene {
       0x000000  // Black
     );
     this.gameWorldBackground.setOrigin(0, 0);
+    
+    // Create white border around Game_World (3px thickness, 800x600 inner dimensions)
+    this.gameWorldBorder = this.add.graphics();
+    this.gameWorldBorder.lineStyle(3, 0xFFFFFF, 1);  // 3px white border
+    this.gameWorldBorder.strokeRect(0, 0, this.worldWidth, this.worldHeight);
     
     // Load sound effects
     this.sounds.pop = this.sound.add('pop');
@@ -754,6 +762,9 @@ class GameScene extends Phaser.Scene {
       this.isPaused = false;
       // Reset player bubble size to 30 pixels
       this.playerBubble.size = 30;
+      // Clear AI_Bubble list before restart
+      this.aiBubbles = [];
+      this.spawnInitialBubbles();
       this.scene.restart({ bubbleCount: this.currentBubbleCount });
     });
   }
@@ -777,6 +788,9 @@ class GameScene extends Phaser.Scene {
   }
 
   spawnInitialBubbles() {
+    // Clear AI_Bubble list to ensure clean state
+    this.aiBubbles = [];
+    
     const targetCount = this.spawnSystem.getTargetCount();
     for (let i = 0; i < targetCount; i++) {
       const bubble = this.spawnSystem.spawnBubble(
@@ -956,6 +970,7 @@ The game state is managed entirely within the GameScene instance:
   isGameOver: boolean,        // Game over state flag
   currentBubbleCount: number, // Current target bubble count (starts at 10, +2 per reset)
   gameWorldBackground: object, // Black background rectangle for Game_World
+  gameWorldBorder: object,    // White border graphics for Game_World (3px thickness)
   isPaused: boolean,          // Pause state for scenario restart (2-second delay)
   sounds: {                   // Sound effect references
     pop: object,              // Pop sound for consumption
@@ -1240,6 +1255,18 @@ For any game state, the score and lives count should be displayed in 24 point Ar
 
 **Validates: Requirements 6.3**
 
+### Property 34: AI Bubble List Cleared on Restart
+
+For any scenario restart event (from winning or losing a life), the AI_Bubble list should be empty before spawning new bubbles for the new scenario.
+
+**Validates: Requirements 4.9**
+
+### Property 35: Game World Border Rendering
+
+For any game state, the Game_World should have a white border with 3 pixels thickness and inner dimensions of 800x600 pixels.
+
+**Validates: Requirements 5.6**
+
 ## Error Handling
 
 ### Input Validation
@@ -1337,6 +1364,7 @@ Unit tests should cover:
    - PreloaderScene displays logo, loads sounds, and transitions to GameScene
    - First scene spawns exactly 10 AI bubbles (Requirement 4.5)
    - Sound effects are loaded and playable (Requirement 12.4)
+   - Game_World has white 3-pixel border with 800x600 inner dimensions (Requirement 5.6)
 
 2. **Edge Cases**
    - Player bubble at exact boundary position
@@ -1344,6 +1372,7 @@ Unit tests should cover:
    - Consumption that would exceed size 100
    - Last life lost triggers game over (Requirement 1.3)
    - Empty AI bubble array handling
+   - AI_Bubble list is cleared before spawning on restart (Requirement 4.9)
 
 3. **PWA Configuration**
    - Service worker registration succeeds (Requirement 7.1)
@@ -1406,4 +1435,6 @@ tests/
 - Run extended property tests (1000 iterations) nightly
 - Maintain minimum 80% code coverage
 - All tests must pass before merging
+
+The design now includes 35 correctness properties covering all testable acceptance criteria.
 
