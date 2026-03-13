@@ -283,8 +283,8 @@ The game uses Phaser's unified pointer system which automatically handles:
    - **Recommendation**: Update specification to remove conflicting requirement
 
 ### Assets Verification
-- ✅ Logo: `assets/images/logo.svg` - EXISTS
-- ✅ Icons: `assets/images/icon-192.svg`, `icon-512.svg` - EXIST
+- ✅ Logo: `assets/images/logo.png` - EXISTS
+- ✅ Icons: `assets/images/icon_192x192.png`, `icon_512x512.png` - EXIST
 - ✅ Sounds: `assets/audio/pop.wav`, `explosion.wav`, `fanfare.wav` - EXIST
 
 ### Visual Design Compliance

@@ -84,9 +84,9 @@ Coverage:    High (all core functionality)
 
 ## Assets Verified
 
-- ✅ `assets/images/logo.svg`
-- ✅ `assets/images/icon-192.svg`
-- ✅ `assets/images/icon-512.svg`
+- ✅ `assets/images/logo.png`
+- ✅ `assets/images/icon_192x192.png`
+- ✅ `assets/images/icon_512x512.png`
 - ✅ `assets/audio/pop.wav`
 - ✅ `assets/audio/explosion.wav`
 - ✅ `assets/audio/fanfare.wav`

@@ -29,7 +29,7 @@ describe('BootScene', () => {
   it('should load the logo image in preload', () => {
     bootScene.preload();
 
-    expect(mockLoad.image).toHaveBeenCalledWith('logo', 'assets/images/logo.svg');
+    expect(mockLoad.image).toHaveBeenCalledWith('logo', 'assets/images/logo.png');
   });
 
   it('should start PreloaderScene in create', () => {

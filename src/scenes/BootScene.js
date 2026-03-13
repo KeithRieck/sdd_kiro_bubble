@@ -12,7 +12,7 @@ class BootScene extends Phaser.Scene {
    */
   preload() {
     // Load the logo that will be displayed in PreloaderScene
-    this.load.image('logo', 'assets/images/logo.svg');
+    this.load.image('logo', 'assets/images/logo.png');
   }
 
   /**

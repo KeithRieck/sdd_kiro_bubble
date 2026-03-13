@@ -7,7 +7,7 @@ All placeholder assets for the Bubble Consumption Game have been successfully cr
 ## Assets Created
 
 ### Sub-task 19.1: Logo Image ✅
-- **File**: `assets/images/logo.svg`
+- **File**: `assets/images/logo.png`
 - **Dimensions**: 200x200 pixels
 - **Format**: SVG (Scalable Vector Graphics)
 - **Design**: Blue background (#4a90e2) with white bubble and "B" letter
@@ -35,13 +35,13 @@ All sound files are in WAV format (16-bit mono, 44.1kHz):
 ### Sub-task 19.3: PWA Icons ✅
 Both icons use the same design as the logo (blue background with white bubble and "B"):
 
-1. **Icon 192x192** (`assets/images/icon-192.svg`)
+1. **Icon 192x192** (`assets/images/icon_192x192.png`)
    - Dimensions: 192x192 pixels
    - Format: SVG
    - Size: 348 bytes
    - Status: Valid SVG, referenced in manifest.json
 
-2. **Icon 512x512** (`assets/images/icon-512.svg`)
+2. **Icon 512x512** (`assets/images/icon_512x512.png`)
    - Dimensions: 512x512 pixels
    - Format: SVG
    - Size: 369 bytes
@@ -52,7 +52,7 @@ Both icons use the same design as the logo (blue background with white bubble an
 ### Code References
 All assets are properly referenced in the codebase:
 
-- **BootScene.js**: Loads `logo.svg`
+- **BootScene.js**: Loads `logo.png`
 - **PreloaderScene.js**: Loads all three sound files
 - **service-worker.js**: Caches all assets for offline use
 - **manifest.json**: References both PWA icons

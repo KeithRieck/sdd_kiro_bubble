@@ -59,9 +59,9 @@ describe('Service Worker', () => {
         '/src/systems/CollisionSystem.js',
         '/src/systems/SpawnSystem.js',
         '/src/ui/HUD.js',
-        '/assets/images/logo.svg',
-        '/assets/images/icon-192.svg',
-        '/assets/images/icon-512.svg',
+        '/assets/images/logo.png',
+        '/assets/images/icon_192x192.png',
+        '/assets/images/icon_512x512.png',
         '/assets/audio/pop.wav',
         '/assets/audio/explosion.wav',
         '/assets/audio/fanfare.wav',
@@ -93,7 +93,7 @@ describe('Service Worker', () => {
       expect(urlsToCache).toContain('/src/ui/HUD.js');
       
       // Verify assets are cached
-      expect(urlsToCache).toContain('/assets/images/logo.svg');
+      expect(urlsToCache).toContain('/assets/images/logo.png');
       expect(urlsToCache).toContain('/assets/audio/pop.wav');
       expect(urlsToCache).toContain('/assets/audio/explosion.wav');
       expect(urlsToCache).toContain('/assets/audio/fanfare.wav');
