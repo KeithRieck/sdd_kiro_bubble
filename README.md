@@ -52,7 +52,16 @@ More requirement changes:
 
 I had to manually tweak the design document to get that second requirement to be implemented.
 
-Again, rebuilding everything took a long time.   At this point, I've expended 259.82 credits.  The game is at a decent point, but not especially challenging.  I think I'd rather work on the gameplay by hand, rather than wait for AI to fix it.
+Again, rebuilding everything took a long time.   At this point, I've expended 259.82 credits.  
+
+
+## Fourth Pass : Changing the game.
+
+The game isn't challenging enough, so I add a new kind of bubble:
+* Add requirements for a new bubble type called the Shrink_Bubble which extends from the Bubble class.
+    * Whenever the SpawnSystem spawns a new bubble, there is a 10 percent chance that it creates a Shrink_Bubble instead of an AIBubble.
+    * Shrink_Bubbles have a diameter of 20 pixels and are colored red.
+    * Whenever a Player_Bubble collides with a Shrink_Bubble, game will play a Shrink sound and the Player_Bubble will change size to 30 pixels and the Shrink_bubble will be destroyed.
 
 
 ---

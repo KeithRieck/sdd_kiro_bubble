@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation plan breaks down the bubble consumption game into discrete coding tasks. The game is built with JavaScript ES2020 and Phaser 3, following a client-side only architecture. The visual design features a dark gray screen background (#808080) with a black Game_World area (#000000) surrounded by a white 3-pixel border (800x600 inner dimensions). The HUD displays score and lives outside the Game_World in 24-point Arial/Helvetica font. AI bubbles spawn at least 200 pixels away from the player. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds, clears the AI_Bubble list, resets the player bubble size to 30 pixels, and spawns initial bubbles for the new scenario. Implementation proceeds incrementally: project setup → core entities → game systems → scene orchestration → PWA features → testing.
+This implementation plan breaks down the bubble consumption game into discrete coding tasks. The game is built with JavaScript ES2020 and Phaser 3, following a client-side only architecture. The visual design features a dark gray screen background (#808080) with a black Game_World area (#000000) surrounded by a white 3-pixel border (800x600 inner dimensions). The HUD displays score and lives outside the Game_World in 24-point Arial/Helvetica font. AI bubbles spawn at least 200 pixels away from the player. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds, clears the AI_Bubble and Shrink_Bubble lists, resets the player bubble size to 30 pixels, and spawns initial bubbles for the new scenario. A ShrinkBubble (red, 20px) has a 10% spawn chance and resets the player to 30px on collision. Implementation proceeds incrementally: project setup → core entities → game systems → scene orchestration → PWA features → testing.
 
 ## Tasks
 
@@ -91,11 +91,27 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Draw colored circle with no border using Phaser Graphics
     - _Requirements: 5.3_
 
+- [ ] 4.6 Implement ShrinkBubble class
+  - Create ShrinkBubble.js extending Bubble
+  - Fixed size of 20 pixels, red color (0xFF0000)
+  - Implement update() with velocity-based movement and boundary bouncing
+  - Implement render() drawing a red circle
+  - _Requirements: 14.1, 14.3, 14.6, 14.7_
+
+- [ ]* 4.7 Write property test for ShrinkBubble size and color
+  - **Property 37: Shrink Bubble Size and Color**
+  - **Validates: Requirements 14.3**
+
+- [ ]* 4.8 Write property test for ShrinkBubble boundary bouncing
+  - **Property 40: Shrink Bubble Boundary Bouncing**
+  - **Validates: Requirements 14.7**
+
 - [ ] 5. Implement CollisionSystem
   - [x] 5.1 Create CollisionSystem.js with static methods
     - Implement checkCollision() using circle-to-circle distance
     - Implement resolveCollision() returning action and data
-    - _Requirements: 3.1, 11.1, 11.2, 11.3_
+    - Handle ShrinkBubble collision type returning 'shrink' action
+    - _Requirements: 3.1, 11.1, 11.2, 11.3, 14.4_
   
   - [ ]* 5.2 Write property test for collision detection
     - **Property 4: Collision Detection by Distance**
@@ -170,9 +186,14 @@ This implementation plan breaks down the bubble consumption game into discrete c
   
   - [x] 7.12 Implement spawnBubble() method
     - Check if at capacity
+    - 10% chance to spawn ShrinkBubble instead of AIBubble
     - Create AIBubble with balanced size and random position/velocity
     - Pass player position to getRandomPosition for distance check
-    - _Requirements: 4.1, 4.2, 4.6, 4.8_
+    - _Requirements: 4.1, 4.2, 4.6, 4.8, 14.2_
+
+  - [ ]* 7.13 Write property test for ShrinkBubble spawn rate
+    - **Property 36: Shrink Bubble Spawn Rate**
+    - **Validates: Requirements 14.2**
 
 - [ ] 8. Implement HUD class
   - [x] 8.1 Create HUD.js with constructor
@@ -216,10 +237,10 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - [x] 10.1 Create PreloaderScene.js
     - Display logo in preload()
     - Create progress bar graphics
-    - Load sound effects (pop, explosion, fanfare)
+    - Load sound effects (pop, explosion, fanfare, shrink)
     - Update progress bar on load events
     - Transition to GameScene on complete
-    - _Requirements: 13.4, 8.5_
+    - _Requirements: 13.4, 14.5, 8.5_
   
   - [ ]* 10.2 Write unit test for PreloaderScene
     - Test asset loading
@@ -233,9 +254,9 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - [x] 12.1 Create GameScene.js with constructor and properties
     - Initialize worldWidth (800), worldHeight (600)
     - Initialize lives (3), score (0), currentBubbleCount (10)
-    - Add properties for playerBubble, aiBubbles array, spawnSystem, hud, sounds
+    - Add properties for playerBubble, aiBubbles array, shrinkBubbles array, spawnSystem, hud, sounds
     - Add isPaused property for scenario restart pause state
-    - _Requirements: 1.1, 1.6, 2.3, 7.1_
+    - _Requirements: 1.1, 1.6, 2.3, 7.1, 14.1_
   
   - [x] 12.2 Implement init() method
     - Preserve bubbleCount across scene restarts
@@ -288,7 +309,12 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Check collision with player using CollisionSystem
     - Handle consumption (increase score, grow player, remove AI, play pop sound)
     - Handle death (play explosion sound, call handleDeath())
-    - _Requirements: 3.1, 3.2, 11.4, 13.1, 13.2_
+    - Loop through shrink bubbles, handle shrink collision (reset player to 30px, remove shrink bubble, play shrink sound)
+    - _Requirements: 3.1, 3.2, 11.4, 13.1, 13.2, 14.4, 14.5_
+
+  - [ ]* 13.3a Write property test for ShrinkBubble collision behavior
+    - **Property 38: Shrink Bubble Collision Behavior**
+    - **Validates: Requirements 14.4, 14.5**
   
   - [ ]* 13.4 Write property test for pop sound on consumption
     - **Property 24: Pop Sound on Consumption**
@@ -299,9 +325,10 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Validates: Requirements 13.2**
   
   - [x] 13.6 Implement maintainBubbleCount() method
-    - Spawn new bubbles until reaching target count
+    - Spawn new bubbles until reaching target count (aiBubbles + shrinkBubbles)
+    - Route spawned ShrinkBubbles to shrinkBubbles array, AIBubbles to aiBubbles array
     - Pass player position to spawnBubble for distance check
-    - _Requirements: 4.2, 4.8_
+    - _Requirements: 4.2, 4.8, 14.2_
   
   - [ ]* 13.7 Write property test for bubble count invariant
     - **Property 13: AI Bubble Count Invariant**
@@ -309,9 +336,10 @@ This implementation plan breaks down the bubble consumption game into discrete c
   
   - [x] 13.8 Implement render() method
     - Render all AI bubbles
+    - Render all shrink bubbles
     - Render player bubble
     - Update HUD
-    - _Requirements: 5.1, 5.2, 5.3_
+    - _Requirements: 5.1, 5.2, 5.3, 14.3_
   
   - [ ]* 13.9 Write property test for bubble radius rendering
     - **Property 19: Bubble Radius Rendering**
@@ -349,7 +377,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - [x] 14.7 Implement restartScenarioWithPause() method
     - Set isPaused to true
     - Use Phaser time.delayedCall to wait 2000ms
-    - After delay: set isPaused to false, reset player bubble size to 30, clear AI_Bubble list, call spawnInitialBubbles(), restart scene
+    - After delay: set isPaused to false, reset player bubble size to 30, clear AI_Bubble and Shrink_Bubble lists, call spawnInitialBubbles(), restart scene
     - _Requirements: 1.6, 1.7, 1.8, 4.9, 4.10_
   
   - [ ]* 14.8 Write property test for AI_Bubble list cleared on restart
@@ -380,9 +408,9 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Validates: Requirements 9.4**
   
   - [x] 15.3 Implement spawnInitialBubbles() helper method
-    - Clear AI_Bubble list to ensure clean state
-    - Spawn bubbles up to target count
-    - _Requirements: 1.8, 4.6, 4.9, 4.10_
+    - Clear AI_Bubble and Shrink_Bubble lists to ensure clean state
+    - Spawn bubbles up to target count, routing to correct arrays by type
+    - _Requirements: 1.8, 4.6, 4.9, 4.10, 14.2_
 
 - [x] 16. Checkpoint - Ensure GameScene tests pass
   - Ensure all tests pass, ask the user if questions arise.
@@ -430,8 +458,8 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - _Requirements: 8.5_
   
   - [x] 19.2 Create placeholder sound files
-    - Create or source pop.wav, explosion.mp3, fanfare.wav
-    - _Requirements: 13.4_
+    - Create or source pop.wav, explosion.mp3, fanfare.wav, shrink.wav
+    - _Requirements: 13.4, 14.5_
   
   - [x] 19.3 Create PWA icons
     - Create icon-192.png and icon-512.png
@@ -455,7 +483,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.6, 1.7, 1.8, 3.2, 3.3, 3.4, 4.2, 4.7, 4.9, 4.10, 5.4, 5.5, 5.6, 6.3_
   
   - [ ]* 20.2 Run all property tests with extended iterations
-    - Run all 35 property tests with 1000 iterations each
+    - Run all 40 property tests with 1000 iterations each
   
   - [ ]* 20.3 Test PWA installation and offline functionality
     - Verify game can be installed
@@ -477,6 +505,6 @@ This implementation plan breaks down the bubble consumption game into discrete c
 - Property tests validate universal correctness properties from the design document
 - Unit tests validate specific examples, edge cases, and integration points
 - The implementation follows an incremental approach: entities → systems → scenes → integration
-- All 35 correctness properties from the design document are covered by property test tasks
+- All 40 correctness properties from the design document are covered by property test tasks
 - PWA features are implemented last to ensure core game functionality is solid first
 - New specifications include: dark gray screen background (#808080), black Game_World background (#000000), white 3-pixel border around Game_World (800x600 inner dimensions), 24pt font for HUD, 200px AI spawn distance from player, 2-second pause on scenario restart, player size reset to 30 pixels after pause, AI_Bubble list clearing before spawning on restart, and initial bubble spawning whenever scenario restarts

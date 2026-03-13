@@ -9,6 +9,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 - **Game**: The bubble consumption web application
 - **Player_Bubble**: The bubble controlled by the player
 - **AI_Bubble**: A computer-controlled bubble in the game world
+- **Shrink_Bubble**: A special bubble that resets the Player_Bubble size to 30 pixels on collision
 - **Game_World**: The playable area containing all bubbles 
 - **Collision**: Physical contact between two bubbles
 - **Size**: The diameter measurement of a bubble
@@ -177,3 +178,21 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. WHEN a level is reset (either from winning or losing a life), THE Game SHALL play a "fanfare" sound effect
 4. THE Game SHALL load all sound assets during the PreloaderScene phase
 5. THE Game SHALL support muting and unmuting of sound effects
+6. WHEN the Player_Bubble collides with a Shrink_Bubble, THE Game SHALL play a "shrink" sound effect
+
+### Requirement 14: Shrink Bubble Behavior
+
+**User Story:** As a player, I want special shrink bubbles that reset my size, so that the game has additional strategic elements and risk-reward mechanics.
+
+#### Acceptance Criteria
+
+1. THE Game SHALL spawn Shrink_Bubbles as a special bubble type that extends from the Bubble class
+2. WHEN the SpawnSystem spawns a new bubble, THE Game SHALL have a 10 percent chance of creating a Shrink_Bubble instead of an AI_Bubble
+3. THE Game SHALL render Shrink_Bubbles with a diameter of 20 pixels
+4. THE Game SHALL render Shrink_Bubbles with a red color
+5. WHEN a Collision occurs between the Player_Bubble and a Shrink_Bubble, THE Game SHALL play a "shrink" sound effect
+6. WHEN a Collision occurs between the Player_Bubble and a Shrink_Bubble, THE Game SHALL change the Player_Bubble Size to 30 pixels
+7. WHEN a Collision occurs between the Player_Bubble and a Shrink_Bubble, THE Game SHALL destroy the Shrink_Bubble
+8. THE Shrink_Bubble SHALL move autonomously with constant velocity like AI_Bubbles
+9. WHEN a Shrink_Bubble reaches a Game_World boundary, THE Game SHALL reverse its direction
+

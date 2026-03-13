@@ -74,7 +74,8 @@ This creates a clear visual separation between the playable area and UI elements
 │   ├── entities/
 │   │   ├── Bubble.js          # Abstract base bubble class
 │   │   ├── PlayerBubble.js    # Player-controlled bubble
-│   │   └── AIBubble.js        # AI-controlled bubble
+│   │   ├── AIBubble.js        # AI-controlled bubble
+│   │   └── ShrinkBubble.js    # Special bubble that resets player size
 │   ├── systems/
 │   │   ├── CollisionSystem.js # Collision detection and resolution
 │   │   ├── SpawnSystem.js     # AI bubble spawning logic
@@ -87,7 +88,8 @@ This creates a clear visual separation between the playable area and UI elements
     └── audio/
         ├── pop.wav            # Consumption sound effect
         ├── explosion.mp3      # Death sound effect
-        └── fanfare.wav        # Level reset sound effect
+        ├── fanfare.wav        # Level reset sound effect
+        └── shrink.wav         # Shrink bubble collision sound effect
 ```
 
 ## Components and Interfaces
@@ -180,6 +182,7 @@ class PreloaderScene extends Phaser.Scene {
     this.load.audio('pop', 'assets/audio/pop.wav');
     this.load.audio('explosion', 'assets/audio/explosion.mp3');
     this.load.audio('fanfare', 'assets/audio/fanfare.wav');
+    this.load.audio('shrink', 'assets/audio/shrink.wav');
   }
 
   create() {
@@ -429,6 +432,55 @@ class AIBubble extends Bubble {
 }
 ```
 
+### ShrinkBubble
+
+Represents a special bubble that resets the player's size to 30 pixels on collision. Extends Bubble base class.
+
+```javascript
+class ShrinkBubble extends Bubble {
+  constructor(scene, x, y, velocityX, velocityY) {
+    super(scene, x, y, 20);  // Fixed size of 20 pixels
+    this.velocityX = velocityX;  // pixels per second
+    this.velocityY = velocityY;  // pixels per second
+  }
+
+  /**
+   * Update position and handle boundary bouncing
+   * @param {number} delta - Time since last frame in ms
+   */
+  update(delta) {
+    const dt = delta / 1000;
+    this.x += this.velocityX * dt;
+    this.y += this.velocityY * dt;
+
+    // Bounce off boundaries
+    const radius = this.getRadius();
+    if (this.x - radius < 0 || this.x + radius > 800) {
+      this.velocityX *= -1;
+      this.constrainToBounds(800, 600);
+    }
+    if (this.y - radius < 0 || this.y + radius > 600) {
+      this.velocityY *= -1;
+      this.constrainToBounds(800, 600);
+    }
+  }
+
+  /**
+   * Render the bubble
+   */
+  render() {
+    // Draw red circle with no border
+    if (!this.graphics) {
+      this.graphics = this.scene.add.graphics();
+    }
+    
+    this.graphics.clear();
+    this.graphics.fillStyle(0xFF0000, 1);  // Red color
+    this.graphics.fillCircle(this.x, this.y, this.getRadius());
+  }
+}
+```
+
 ### CollisionSystem
 
 Handles collision detection and resolution between bubbles.
@@ -450,17 +502,27 @@ class CollisionSystem {
   }
 
   /**
-   * Process collision between player and AI bubble
+   * Process collision between player and AI bubble or Shrink bubble
    * @param {PlayerBubble} player
-   * @param {AIBubble} aiBubble
+   * @param {AIBubble|ShrinkBubble} bubble
    * @returns {Object} Result with action and data
    */
-  static resolveCollision(player, aiBubble) {
-    if (player.size > aiBubble.size) {
+  static resolveCollision(player, bubble) {
+    // Check if it's a ShrinkBubble
+    if (bubble.constructor.name === 'ShrinkBubble') {
+      return {
+        action: 'shrink',
+        score: 0,
+        growth: 0
+      };
+    }
+    
+    // Regular AI bubble collision
+    if (player.size > bubble.size) {
       return {
         action: 'consume',
-        score: aiBubble.size,
-        growth: Math.floor(Math.sqrt(aiBubble.size))
+        score: bubble.size,
+        growth: Math.floor(Math.sqrt(bubble.size))
       };
     } else {
       return {
@@ -514,18 +576,32 @@ class SpawnSystem {
   }
 
   /**
-   * Spawn a new AI bubble with balanced size distribution
+   * Spawn a new AI bubble or Shrink bubble with balanced size distribution
    * @param {number} playerSize - Current player bubble size
    * @param {number} playerX - Player bubble X position
    * @param {number} playerY - Player bubble Y position
    * @param {number} currentCount - Current number of AI bubbles
-   * @returns {AIBubble|null} New bubble or null if at capacity
+   * @returns {AIBubble|ShrinkBubble|null} New bubble or null if at capacity
    */
   spawnBubble(playerSize, playerX, playerY, currentCount) {
     if (currentCount >= this.targetBubbleCount) {
       return null;
     }
 
+    // 10% chance to spawn a ShrinkBubble
+    if (Math.random() < 0.1) {
+      const position = this.getRandomPosition(20, playerX, playerY);
+      const velocity = this.getRandomVelocity();
+      return new ShrinkBubble(
+        this.scene,
+        position.x,
+        position.y,
+        velocity.x,
+        velocity.y
+      );
+    }
+
+    // Otherwise spawn regular AIBubble
     const sizeRange = this.calculateSizeRange(playerSize);
     const size = this.generateBalancedSize(sizeRange, playerSize);
     const position = this.getRandomPosition(size, playerX, playerY);
@@ -617,6 +693,7 @@ class GameScene extends Phaser.Scene {
     this.score = 0;
     this.playerBubble = null;
     this.aiBubbles = [];
+    this.shrinkBubbles = [];
     this.spawnSystem = null;
     this.hud = null;
     this.sounds = {};
@@ -657,6 +734,7 @@ class GameScene extends Phaser.Scene {
     this.sounds.pop = this.sound.add('pop');
     this.sounds.explosion = this.sound.add('explosion');
     this.sounds.fanfare = this.sound.add('fanfare');
+    this.sounds.shrink = this.sound.add('shrink');
     
     // Create player bubble at center
     this.playerBubble = new PlayerBubble(
@@ -695,6 +773,9 @@ class GameScene extends Phaser.Scene {
 
     // Update AI bubbles
     this.aiBubbles.forEach(bubble => bubble.update(delta));
+    
+    // Update Shrink bubbles
+    this.shrinkBubbles.forEach(bubble => bubble.update(delta));
 
     // Check collisions
     this.checkCollisions();
@@ -712,6 +793,7 @@ class GameScene extends Phaser.Scene {
   }
 
   checkCollisions() {
+    // Check AI bubble collisions
     for (let i = this.aiBubbles.length - 1; i >= 0; i--) {
       const aiBubble = this.aiBubbles[i];
       if (CollisionSystem.checkCollision(this.playerBubble, aiBubble)) {
@@ -729,6 +811,23 @@ class GameScene extends Phaser.Scene {
           this.sounds.explosion.play();
           this.handleDeath();
           break;
+        }
+      }
+    }
+    
+    // Check Shrink bubble collisions
+    for (let i = this.shrinkBubbles.length - 1; i >= 0; i--) {
+      const shrinkBubble = this.shrinkBubbles[i];
+      if (CollisionSystem.checkCollision(this.playerBubble, shrinkBubble)) {
+        const result = CollisionSystem.resolveCollision(
+          this.playerBubble,
+          shrinkBubble
+        );
+        
+        if (result.action === 'shrink') {
+          this.playerBubble.size = 30;  // Reset player size to 30 pixels
+          this.shrinkBubbles.splice(i, 1);
+          this.sounds.shrink.play();
         }
       }
     }
@@ -762,8 +861,9 @@ class GameScene extends Phaser.Scene {
       this.isPaused = false;
       // Reset player bubble size to 30 pixels
       this.playerBubble.size = 30;
-      // Clear AI_Bubble list before restart
+      // Clear AI_Bubble and Shrink_Bubble lists before restart
       this.aiBubbles = [];
+      this.shrinkBubbles = [];
       this.spawnInitialBubbles();
       this.scene.restart({ bubbleCount: this.currentBubbleCount });
     });
@@ -788,34 +888,47 @@ class GameScene extends Phaser.Scene {
   }
 
   spawnInitialBubbles() {
-    // Clear AI_Bubble list to ensure clean state
+    // Clear AI_Bubble and Shrink_Bubble lists to ensure clean state
     this.aiBubbles = [];
+    this.shrinkBubbles = [];
     
     const targetCount = this.spawnSystem.getTargetCount();
+    const totalBubbles = this.aiBubbles.length + this.shrinkBubbles.length;
+    
     for (let i = 0; i < targetCount; i++) {
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
         this.playerBubble.x,
         this.playerBubble.y,
-        this.aiBubbles.length
+        totalBubbles
       );
       if (bubble) {
-        this.aiBubbles.push(bubble);
+        if (bubble.constructor.name === 'ShrinkBubble') {
+          this.shrinkBubbles.push(bubble);
+        } else {
+          this.aiBubbles.push(bubble);
+        }
       }
     }
   }
 
   maintainBubbleCount() {
     const targetCount = this.spawnSystem.getTargetCount();
-    while (this.aiBubbles.length < targetCount) {
+    const totalBubbles = this.aiBubbles.length + this.shrinkBubbles.length;
+    
+    while (totalBubbles < targetCount) {
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
         this.playerBubble.x,
         this.playerBubble.y,
-        this.aiBubbles.length
+        totalBubbles
       );
       if (bubble) {
-        this.aiBubbles.push(bubble);
+        if (bubble.constructor.name === 'ShrinkBubble') {
+          this.shrinkBubbles.push(bubble);
+        } else {
+          this.aiBubbles.push(bubble);
+        }
       }
     }
   }
@@ -824,6 +937,7 @@ class GameScene extends Phaser.Scene {
     // Clear previous frame
     // Render all bubbles
     this.aiBubbles.forEach(bubble => bubble.render());
+    this.shrinkBubbles.forEach(bubble => bubble.render());
     this.playerBubble.render();
     this.hud.render(this.score, this.lives);
   }
@@ -901,6 +1015,7 @@ const urlsToCache = [
   '/src/entities/Bubble.js',
   '/src/entities/PlayerBubble.js',
   '/src/entities/AIBubble.js',
+  '/src/entities/ShrinkBubble.js',
   '/src/systems/CollisionSystem.js',
   '/src/systems/SpawnSystem.js',
   '/src/systems/MovementSystem.js',
@@ -909,6 +1024,7 @@ const urlsToCache = [
   '/assets/audio/pop.wav',
   '/assets/audio/explosion.mp3',
   '/assets/audio/fanfare.wav',
+  '/assets/audio/shrink.wav',
   'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js'
 ];
 
@@ -965,6 +1081,7 @@ The game state is managed entirely within the GameScene instance:
   score: number,              // Current score (sum of consumed bubble sizes)
   playerBubble: PlayerBubble, // Player entity
   aiBubbles: AIBubble[],      // Array of AI entities
+  shrinkBubbles: ShrinkBubble[], // Array of Shrink bubble entities
   worldWidth: 800,            // Game world width in pixels
   worldHeight: 600,           // Game world height in pixels
   isGameOver: boolean,        // Game over state flag
@@ -975,7 +1092,8 @@ The game state is managed entirely within the GameScene instance:
   sounds: {                   // Sound effect references
     pop: object,              // Pop sound for consumption
     explosion: object,        // Explosion sound for death
-    fanfare: object           // Fanfare sound for level reset
+    fanfare: object,          // Fanfare sound for level reset
+    shrink: object            // Shrink sound for size reset
   }
 }
 ```
@@ -1013,15 +1131,25 @@ AIBubble additional properties:
 }
 ```
 
+ShrinkBubble additional properties:
+
+```javascript
+{
+  velocityX: number,  // X velocity in pixels per second
+  velocityY: number   // Y velocity in pixels per second
+  // Note: size is always 20 pixels, color is always red (0xFF0000)
+}
+```
+
 ### Collision Result
 
 Result object from collision resolution:
 
 ```javascript
 {
-  action: 'consume' | 'death',  // Outcome of collision
-  score: number,                // Score to add (0 for death)
-  growth: number                // Size growth for player (0 for death)
+  action: 'consume' | 'death' | 'shrink',  // Outcome of collision
+  score: number,                           // Score to add (0 for death or shrink)
+  growth: number                           // Size growth for player (0 for death or shrink)
 }
 ```
 
@@ -1267,6 +1395,36 @@ For any game state, the Game_World should have a white border with 3 pixels thic
 
 **Validates: Requirements 5.6**
 
+### Property 36: Shrink Bubble Spawn Rate
+
+For any sequence of N bubble spawns (where N >= 100), approximately 10% (±5%) of spawned bubbles should be ShrinkBubbles.
+
+**Validates: Requirements 14.2**
+
+### Property 37: Shrink Bubble Size and Color
+
+For any ShrinkBubble in the game, its size should be exactly 20 pixels and its color should be red (0xFF0000).
+
+**Validates: Requirements 14.3**
+
+### Property 38: Shrink Bubble Collision Behavior
+
+For any collision between a Player_Bubble and a ShrinkBubble, the Player_Bubble size should be reset to 30 pixels, the ShrinkBubble should be destroyed, and the shrink sound should play.
+
+**Validates: Requirements 14.4, 14.5**
+
+### Property 39: Shrink Bubble Movement
+
+For any ShrinkBubble between boundary collisions, its velocity vector should remain constant across all update frames.
+
+**Validates: Requirements 14.6**
+
+### Property 40: Shrink Bubble Boundary Bouncing
+
+For any ShrinkBubble that reaches a game world boundary, its velocity component perpendicular to that boundary should reverse direction (multiply by -1).
+
+**Validates: Requirements 14.7**
+
 ## Error Handling
 
 ### Input Validation
@@ -1436,5 +1594,5 @@ tests/
 - Maintain minimum 80% code coverage
 - All tests must pass before merging
 
-The design now includes 35 correctness properties covering all testable acceptance criteria.
+The design now includes 40 correctness properties covering all testable acceptance criteria.
 
