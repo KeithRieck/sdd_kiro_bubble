@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import GameScene from '../../../src/scenes/GameScene.js';
 import PlayerBubble from '../../../src/entities/PlayerBubble.js';
 import AIBubble from '../../../src/entities/AIBubble.js';
+import SpawnSystem from '../../../src/systems/SpawnSystem.js';
 
 describe('GameScene', () => {
   let gameScene;
@@ -30,6 +31,7 @@ describe('GameScene', () => {
         fillCircle: vi.fn(),
         lineStyle: vi.fn(),
         strokeCircle: vi.fn(),
+        strokeRect: vi.fn(),
         destroy: vi.fn()
       })),
       text: vi.fn(() => ({
@@ -415,6 +417,72 @@ describe('GameScene', () => {
       gameScene.handleGameOver();
       
       expect(showGameOverSpy).toHaveBeenCalledWith(150);
+    });
+  });
+
+  describe('spawnInitialBubbles()', () => {
+    beforeEach(() => {
+      gameScene.create();
+    });
+
+    it('should clear AI_Bubble list before spawning (Req 4.9)', () => {
+      // Add some bubbles to the list
+      const existingBubbles = [...gameScene.aiBubbles];
+      expect(existingBubbles.length).toBeGreaterThan(0);
+      
+      // Call spawnInitialBubbles
+      gameScene.spawnInitialBubbles();
+      
+      // Verify new bubbles were created (not the same instances)
+      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles[0]).not.toBe(existingBubbles[0]);
+    });
+
+    it('should spawn bubbles up to target count (Req 1.8, 4.6, 4.10)', () => {
+      // Clear bubbles first
+      gameScene.aiBubbles = [];
+      
+      // Call spawnInitialBubbles
+      gameScene.spawnInitialBubbles();
+      
+      // Verify correct number of bubbles spawned
+      expect(gameScene.aiBubbles.length).toBe(10);
+      gameScene.aiBubbles.forEach(bubble => {
+        expect(bubble).toBeInstanceOf(AIBubble);
+      });
+    });
+
+    it('should spawn increased bubble count after difficulty increase', () => {
+      // Increase difficulty
+      gameScene.currentBubbleCount = 12;
+      gameScene.spawnSystem = new SpawnSystem(
+        gameScene,
+        gameScene.worldWidth,
+        gameScene.worldHeight,
+        12
+      );
+      
+      // Clear and respawn
+      gameScene.aiBubbles = [];
+      gameScene.spawnInitialBubbles();
+      
+      // Verify increased count
+      expect(gameScene.aiBubbles.length).toBe(12);
+    });
+
+    it('should destroy graphics of existing bubbles before clearing', () => {
+      // Create mock bubbles with graphics
+      const mockBubble = new AIBubble(gameScene, 100, 100, 20, 0, 0);
+      // Render the bubble to create graphics
+      mockBubble.render();
+      const destroySpy = vi.spyOn(mockBubble.graphics, 'destroy');
+      gameScene.aiBubbles = [mockBubble];
+      
+      // Call spawnInitialBubbles
+      gameScene.spawnInitialBubbles();
+      
+      // Verify graphics were destroyed
+      expect(destroySpy).toHaveBeenCalled();
     });
   });
 

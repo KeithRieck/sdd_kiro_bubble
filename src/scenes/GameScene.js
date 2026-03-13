@@ -29,6 +29,7 @@ class GameScene extends Phaser.Scene {
     this.hud = null;
     this.sounds = {};
     this.gameWorldBackground = null;  // Black background for Game_World
+    this.gameWorldBorder = null;  // White border for Game_World
     this.isPaused = false;  // Track pause state for scenario restart
   }
 
@@ -61,6 +62,11 @@ class GameScene extends Phaser.Scene {
       0x000000  // Black (#000000)
     );
     this.gameWorldBackground.setOrigin(0, 0);
+    
+    // Create white 3-pixel border around Game_World (800x600 inner dimensions)
+    this.gameWorldBorder = this.add.graphics();
+    this.gameWorldBorder.lineStyle(3, 0xFFFFFF, 1);  // 3px white border
+    this.gameWorldBorder.strokeRect(0, 0, this.worldWidth, this.worldHeight);
     
     // Load sound effects
     this.sounds.pop = this.sound.add('pop');
@@ -192,7 +198,8 @@ class GameScene extends Phaser.Scene {
 
   /**
    * Restart scenario with 2-second pause and player size reset
-   * Sets isPaused to true, waits 2 seconds, then resets player size to 30 and restarts scene
+   * Sets isPaused to true, waits 2 seconds, then resets player size to 30,
+   * clears AI_Bubble list, spawns initial bubbles, and restarts scene
    */
   restartScenarioWithPause() {
     this.isPaused = true;
@@ -200,8 +207,22 @@ class GameScene extends Phaser.Scene {
     // Wait 2 seconds before restarting
     this.time.delayedCall(2000, () => {
       this.isPaused = false;
+      
       // Reset player bubble size to 30 pixels
       this.playerBubble.size = 30;
+      
+      // Clear AI_Bubble list before restart (destroy graphics)
+      this.aiBubbles.forEach(bubble => {
+        if (bubble.graphics) {
+          bubble.graphics.destroy();
+        }
+      });
+      this.aiBubbles = [];
+      
+      // Spawn initial bubbles for new scenario
+      this.spawnInitialBubbles();
+      
+      // Restart scene with updated state
       this.scene.restart({ 
         bubbleCount: this.currentBubbleCount,
         lives: this.lives,
@@ -238,8 +259,17 @@ class GameScene extends Phaser.Scene {
 
   /**
    * Spawn initial AI bubbles up to target count
+   * Clears AI_Bubble list first to ensure clean state
    */
   spawnInitialBubbles() {
+    // Clear AI_Bubble list to ensure clean state
+    this.aiBubbles.forEach(bubble => {
+      if (bubble.graphics) {
+        bubble.graphics.destroy();
+      }
+    });
+    this.aiBubbles = [];
+    
     const targetCount = this.spawnSystem.getTargetCount();
     for (let i = 0; i < targetCount; i++) {
       const bubble = this.spawnSystem.spawnBubble(

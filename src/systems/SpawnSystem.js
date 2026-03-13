@@ -62,33 +62,35 @@ class SpawnSystem {
     let size;
     
     if (roll < 0.3) {
-      // 30% smaller than player
-      const range = playerSize - sizeRange.min;
-      if (range <= 0) {
+      // 30% chance: size < playerSize
+      // Generate from sizeRange.min to playerSize-1
+      const maxSize = playerSize - 1;
+      if (maxSize < sizeRange.min) {
+        // Edge case: playerSize is at or below min, use min
         size = sizeRange.min;
       } else {
+        const range = maxSize - sizeRange.min + 1;
         size = Math.floor(Math.random() * range + sizeRange.min);
       }
     } else if (roll < 0.8) {
-      // 50% similar to player (within ±20% of player size)
-      const variance = playerSize * 0.2;
+      // 50% chance: size ≈ playerSize
+      // Generate within ±20% of playerSize, but ensure it's close
+      const variance = Math.max(1, Math.floor(playerSize * 0.2));
       const min = Math.max(sizeRange.min, playerSize - variance);
       const max = Math.min(sizeRange.max, playerSize + variance);
       
-      // Ensure min <= max
-      if (min > max) {
-        // If player size is near the upper bound, just use the valid range
-        size = Math.floor(Math.random() * (sizeRange.max - sizeRange.min) + sizeRange.min);
-      } else {
-        size = Math.floor(Math.random() * (max - min) + min);
-      }
+      const range = max - min + 1;
+      size = Math.floor(Math.random() * range + min);
     } else {
-      // 20% larger than player
-      const range = sizeRange.max - playerSize;
-      if (range <= 0) {
+      // 20% chance: size > playerSize
+      // Generate from playerSize+1 to sizeRange.max
+      const minSize = playerSize + 1;
+      if (minSize > sizeRange.max) {
+        // Edge case: playerSize is at or above max, use max
         size = sizeRange.max;
       } else {
-        size = Math.floor(Math.random() * range + playerSize);
+        const range = sizeRange.max - minSize + 1;
+        size = Math.floor(Math.random() * range + minSize);
       }
     }
     

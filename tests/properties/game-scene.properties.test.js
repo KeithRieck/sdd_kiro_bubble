@@ -4,46 +4,54 @@ import GameScene from '../../src/scenes/GameScene.js';
 import PlayerBubble from '../../src/entities/PlayerBubble.js';
 import AIBubble from '../../src/entities/AIBubble.js';
 
+// Helper function to create a fresh mock scene
+function createMockScene(soundMocks = {}, customMocks = {}) {
+  return {
+    sound: {
+      add: vi.fn((key) => {
+        if (soundMocks[key]) return soundMocks[key];
+        return { play: vi.fn() };
+      })
+    },
+    add: {
+      rectangle: vi.fn((x, y, width, height, color) => ({
+        setOrigin: vi.fn()
+      })),
+      graphics: vi.fn(() => ({
+        clear: vi.fn(),
+        fillStyle: vi.fn(),
+        fillCircle: vi.fn(),
+        lineStyle: vi.fn(),
+        strokeCircle: vi.fn(),
+                  strokeRect: vi.fn(),
+        strokeRect: vi.fn(),
+        destroy: vi.fn()
+      })),
+      text: vi.fn(() => ({
+        setText: vi.fn(),
+        setOrigin: vi.fn()
+      }))
+    },
+    input: {
+      on: vi.fn(),
+      once: vi.fn()
+    },
+    time: customMocks.time || {
+      delayedCall: vi.fn((delay, callback) => callback())
+    },
+    scene: {
+      restart: vi.fn(),
+      pause: vi.fn()
+    }
+  };
+}
+
 describe('GameScene Properties', () => {
   let mockScene;
 
   beforeEach(() => {
     // Create mock Phaser scene context
-    mockScene = {
-      sound: {
-        add: vi.fn((key) => ({
-          play: vi.fn()
-        }))
-      },
-      add: {
-        rectangle: vi.fn((x, y, width, height, color) => ({
-          setOrigin: vi.fn()
-        })),
-        graphics: vi.fn(() => ({
-          clear: vi.fn(),
-          fillStyle: vi.fn(),
-          fillCircle: vi.fn(),
-          lineStyle: vi.fn(),
-          strokeCircle: vi.fn(),
-          destroy: vi.fn()
-        })),
-        text: vi.fn(() => ({
-          setText: vi.fn(),
-          setOrigin: vi.fn()
-        }))
-      },
-      input: {
-        on: vi.fn(),
-        once: vi.fn()
-      },
-      time: {
-        delayedCall: vi.fn((delay, callback) => callback())
-      },
-      scene: {
-        restart: vi.fn(),
-        pause: vi.fn()
-      }
-    };
+    mockScene = createMockScene();
   });
 
   describe('Property 9: Life Decrement', () => {
@@ -343,44 +351,11 @@ describe('GameScene Properties', () => {
             const explosionSound = { play: vi.fn() };
             const fanfareSound = { play: vi.fn() };
             
-            const freshMockScene = {
-              sound: {
-                add: vi.fn((key) => {
-                  if (key === 'pop') return popSound;
-                  if (key === 'explosion') return explosionSound;
-                  if (key === 'fanfare') return fanfareSound;
-                  return { play: vi.fn() };
-                })
-              },
-              add: {
-                rectangle: vi.fn((x, y, width, height, color) => ({
-                  setOrigin: vi.fn()
-                })),
-                graphics: vi.fn(() => ({
-                  clear: vi.fn(),
-                  fillStyle: vi.fn(),
-                  fillCircle: vi.fn(),
-                  lineStyle: vi.fn(),
-                  strokeCircle: vi.fn(),
-                  destroy: vi.fn()
-                })),
-                text: vi.fn(() => ({
-                  setText: vi.fn(),
-                  setOrigin: vi.fn()
-                }))
-              },
-              input: {
-                on: vi.fn(),
-                once: vi.fn()
-              },
-              time: {
-                delayedCall: vi.fn((delay, callback) => callback())
-              },
-              scene: {
-                restart: vi.fn(),
-                pause: vi.fn()
-              }
-            };
+            const freshMockScene = createMockScene({
+              pop: popSound,
+              explosion: explosionSound,
+              fanfare: fanfareSound
+            });
             
             const gameScene = new GameScene();
             Object.assign(gameScene, freshMockScene);
@@ -448,44 +423,11 @@ describe('GameScene Properties', () => {
             const popSound = { play: vi.fn() };
             const fanfareSound = { play: vi.fn() };
             
-            const freshMockScene = {
-              sound: {
-                add: vi.fn((key) => {
-                  if (key === 'explosion') return explosionSound;
-                  if (key === 'pop') return popSound;
-                  if (key === 'fanfare') return fanfareSound;
-                  return { play: vi.fn() };
-                })
-              },
-              add: {
-                rectangle: vi.fn((x, y, width, height, color) => ({
-                  setOrigin: vi.fn()
-                })),
-                graphics: vi.fn(() => ({
-                  clear: vi.fn(),
-                  fillStyle: vi.fn(),
-                  fillCircle: vi.fn(),
-                  lineStyle: vi.fn(),
-                  strokeCircle: vi.fn(),
-                  destroy: vi.fn()
-                })),
-                text: vi.fn(() => ({
-                  setText: vi.fn(),
-                  setOrigin: vi.fn()
-                }))
-              },
-              input: {
-                on: vi.fn(),
-                once: vi.fn()
-              },
-              time: {
-                delayedCall: vi.fn((delay, callback) => callback())
-              },
-              scene: {
-                restart: vi.fn(),
-                pause: vi.fn()
-              }
-            };
+            const freshMockScene = createMockScene({
+              explosion: explosionSound,
+              pop: popSound,
+              fanfare: fanfareSound
+            });
             
             const gameScene = new GameScene();
             Object.assign(gameScene, freshMockScene);
@@ -682,41 +624,9 @@ describe('GameScene Properties', () => {
               // Don't call callback immediately - we're testing the delay
             });
             
-            const freshMockScene = {
-              sound: {
-                add: vi.fn((key) => ({
-                  play: vi.fn()
-                }))
-              },
-              add: {
-                rectangle: vi.fn((x, y, width, height, color) => ({
-                  setOrigin: vi.fn()
-                })),
-                graphics: vi.fn(() => ({
-                  clear: vi.fn(),
-                  fillStyle: vi.fn(),
-                  fillCircle: vi.fn(),
-                  lineStyle: vi.fn(),
-                  strokeCircle: vi.fn(),
-                  destroy: vi.fn()
-                })),
-                text: vi.fn(() => ({
-                  setText: vi.fn(),
-                  setOrigin: vi.fn()
-                }))
-              },
-              input: {
-                on: vi.fn(),
-                once: vi.fn()
-              },
-              time: {
-                delayedCall: delayedCallMock
-              },
-              scene: {
-                restart: vi.fn(),
-                pause: vi.fn()
-              }
-            };
+            const freshMockScene = createMockScene({}, {
+              time: { delayedCall: delayedCallMock }
+            });
             
             const gameScene = new GameScene();
             Object.assign(gameScene, freshMockScene);
@@ -768,6 +678,7 @@ describe('GameScene Properties', () => {
                   fillCircle: vi.fn(),
                   lineStyle: vi.fn(),
                   strokeCircle: vi.fn(),
+                  strokeRect: vi.fn(),
                   destroy: vi.fn()
                 })),
                 text: vi.fn(() => ({
@@ -846,6 +757,7 @@ describe('GameScene Properties', () => {
                   fillCircle: vi.fn(),
                   lineStyle: vi.fn(),
                   strokeCircle: vi.fn(),
+                  strokeRect: vi.fn(),
                   destroy: vi.fn()
                 })),
                 text: vi.fn(() => ({
@@ -925,6 +837,7 @@ describe('GameScene Properties', () => {
                   fillCircle: vi.fn(),
                   lineStyle: vi.fn(),
                   strokeCircle: vi.fn(),
+                  strokeRect: vi.fn(),
                   destroy: vi.fn()
                 })),
                 text: vi.fn(() => ({
@@ -1034,6 +947,7 @@ describe('GameScene Properties', () => {
                   fillCircle: vi.fn(),
                   lineStyle: vi.fn(),
                   strokeCircle: vi.fn(),
+                  strokeRect: vi.fn(),
                   destroy: vi.fn()
                 })),
                 text: vi.fn(() => ({
@@ -1096,6 +1010,7 @@ describe('GameScene Properties', () => {
                   fillCircle: vi.fn(),
                   lineStyle: vi.fn(),
                   strokeCircle: vi.fn(),
+                  strokeRect: vi.fn(),
                   destroy: vi.fn()
                 })),
                 text: vi.fn(() => ({

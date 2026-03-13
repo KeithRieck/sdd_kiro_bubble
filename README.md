@@ -52,6 +52,9 @@ More requirement changes:
 
 I had to manually tweak the design document to get that second requirement to be implemented.
 
+Again, rebuilding everything took a long time.   At this point, I've expended 259.82 credits.  The game is at a decent point, but not especially challenging.  I think I'd rather work on the gameplay by hand, rather than wait for AI to fix it.
+
+
 ---
 
 

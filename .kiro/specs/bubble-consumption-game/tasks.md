@@ -6,7 +6,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
 
 ## Tasks
 
-- [ ] 1. Set up project structure and dependencies
+- [x] 1. Set up project structure and dependencies
   - Create directory structure (src/scenes, src/entities, src/systems, src/ui, assets/images, assets/audio)
   - Create index.html with Phaser CDN link and service worker registration
   - Create manifest.json for PWA configuration
@@ -14,7 +14,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - _Requirements: 8.1, 8.2_
 
 - [ ] 2. Implement abstract Bubble base class
-  - [ ] 2.1 Create Bubble.js with constructor and common properties
+  - [x] 2.1 Create Bubble.js with constructor and common properties
     - Implement constructor with scene, x, y, size parameters
     - Add abstract class check to prevent direct instantiation
     - Implement getRadius() method
@@ -25,12 +25,12 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 1: Player Bubble Boundary Constraint**
     - **Validates: Requirements 2.3, 2.4**
   
-  - [ ] 2.3 Add abstract update() and render() methods
+  - [x] 2.3 Add abstract update() and render() methods
     - Define abstract methods that throw errors if not overridden
     - _Requirements: 5.1_
 
 - [ ] 3. Implement PlayerBubble class
-  - [ ] 3.1 Create PlayerBubble.js extending Bubble
+  - [x] 3.1 Create PlayerBubble.js extending Bubble
     - Implement constructor with default size 30
     - Add targetX and targetY properties
     - Implement getSpeed() method (inversely proportional to size)
@@ -40,7 +40,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 2: Speed Inversely Proportional to Size**
     - **Validates: Requirements 2.2**
   
-  - [ ] 3.3 Implement update() method with movement logic
+  - [x] 3.3 Implement update() method with movement logic
     - Calculate direction vector to target
     - Apply speed-based movement with delta time
     - Constrain position to world boundaries
@@ -50,11 +50,11 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 3: Input Sets Movement Target**
     - **Validates: Requirements 2.1, 9.1, 9.2**
   
-  - [ ] 3.5 Implement setTarget() method
+  - [x] 3.5 Implement setTarget() method
     - Set targetX and targetY from input coordinates
     - _Requirements: 2.1_
   
-  - [ ] 3.6 Implement grow() method
+  - [x] 3.6 Implement grow() method
     - Calculate growth as floor(sqrt(consumedSize))
     - Cap size at 100 pixels
     - _Requirements: 3.4_
@@ -63,18 +63,18 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 6: Growth Calculation**
     - **Validates: Requirements 3.4**
   
-  - [ ] 3.8 Implement render() method
+  - [x] 3.8 Implement render() method
     - Draw gray circle with blue border using Phaser Graphics
     - _Requirements: 5.2_
 
 - [ ] 4. Implement AIBubble class
-  - [ ] 4.1 Create AIBubble.js extending Bubble
+  - [x] 4.1 Create AIBubble.js extending Bubble
     - Implement constructor with velocityX and velocityY parameters
     - Add color property with pastel color generation
     - Implement generatePastelColor() and hslToHex() helper methods
     - _Requirements: 4.1, 4.2, 5.3_
   
-  - [ ] 4.2 Implement update() method with boundary bouncing
+  - [x] 4.2 Implement update() method with boundary bouncing
     - Update position based on velocity and delta time
     - Reverse velocity components when hitting boundaries
     - _Requirements: 4.3, 4.4_
@@ -87,12 +87,12 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 12: AI Bubble Constant Velocity**
     - **Validates: Requirements 4.3**
   
-  - [ ] 4.5 Implement render() method
+  - [x] 4.5 Implement render() method
     - Draw colored circle with no border using Phaser Graphics
     - _Requirements: 5.3_
 
 - [ ] 5. Implement CollisionSystem
-  - [ ] 5.1 Create CollisionSystem.js with static methods
+  - [x] 5.1 Create CollisionSystem.js with static methods
     - Implement checkCollision() using circle-to-circle distance
     - Implement resolveCollision() returning action and data
     - _Requirements: 3.1, 11.1, 11.2, 11.3_
@@ -113,17 +113,17 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 8: Death on Larger Collision**
     - **Validates: Requirements 3.3**
 
-- [ ] 6. Checkpoint - Ensure core entity tests pass
+- [x] 6. Checkpoint - Ensure core entity tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Implement SpawnSystem
-  - [ ] 7.1 Create SpawnSystem.js with constructor
+  - [x] 7.1 Create SpawnSystem.js with constructor
     - Initialize with scene, worldWidth, worldHeight, initialBubbleCount
     - Add targetBubbleCount property (starts at 10)
     - Implement incrementDifficulty() and getTargetCount() methods
     - _Requirements: 4.6, 4.7_
   
-  - [ ] 7.2 Implement calculateSizeRange() method
+  - [x] 7.2 Implement calculateSizeRange() method
     - Calculate min as max(10, 0.5 * playerSize)
     - Calculate max as min(70, 1.5 * playerSize)
     - _Requirements: 4.5, 12.1, 12.2_
@@ -136,7 +136,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 16: Dynamic Size Scaling**
     - **Validates: Requirements 12.1, 12.2**
   
-  - [ ] 7.5 Implement generateBalancedSize() method
+  - [x] 7.5 Implement generateBalancedSize() method
     - 30% chance for size < playerSize
     - 50% chance for size ≈ playerSize
     - 20% chance for size > playerSize
@@ -150,7 +150,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 18: Larger Bubble Distribution**
     - **Validates: Requirements 12.4**
   
-  - [ ] 7.8 Implement getRandomPosition() method with player distance constraint
+  - [x] 7.8 Implement getRandomPosition() method with player distance constraint
     - Generate position with margin from edges
     - Ensure position is at least 200 pixels from player bubble center
     - Use retry loop with max attempts to find valid position
@@ -164,18 +164,18 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 14: AI Bubble Spawn Position**
     - **Validates: Requirements 4.1**
   
-  - [ ] 7.11 Implement getRandomVelocity() method
+  - [x] 7.11 Implement getRandomVelocity() method
     - Generate velocity with random angle and speed 50-150 px/s
     - _Requirements: 4.3_
   
-  - [ ] 7.12 Implement spawnBubble() method
+  - [x] 7.12 Implement spawnBubble() method
     - Check if at capacity
     - Create AIBubble with balanced size and random position/velocity
     - Pass player position to getRandomPosition for distance check
     - _Requirements: 4.1, 4.2, 4.6, 4.8_
 
 - [ ] 8. Implement HUD class
-  - [ ] 8.1 Create HUD.js with constructor
+  - [x] 8.1 Create HUD.js with constructor
     - Create score and lives text elements using Phaser
     - Position outside Game_World area (e.g., top-left corner)
     - Use 24 point Arial or Helvetica font
@@ -189,11 +189,11 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 20: Score Always Visible**
     - **Validates: Requirements 1.5**
   
-  - [ ] 8.4 Implement render() method
+  - [x] 8.4 Implement render() method
     - Update score and lives text displays
     - _Requirements: 1.5_
   
-  - [ ] 8.5 Implement showGameOver() method
+  - [x] 8.5 Implement showGameOver() method
     - Display final score and restart option
     - Set up click handler for restart
     - _Requirements: 7.2, 7.3_
@@ -203,7 +203,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Validates: Requirements 7.2, 7.3**
 
 - [ ] 9. Implement BootScene
-  - [ ] 9.1 Create BootScene.js
+  - [x] 9.1 Create BootScene.js
     - Implement preload() to load logo image
     - Implement create() to transition to PreloaderScene
     - _Requirements: 8.5_
@@ -213,7 +213,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test scene transition to PreloaderScene
 
 - [ ] 10. Implement PreloaderScene
-  - [ ] 10.1 Create PreloaderScene.js
+  - [x] 10.1 Create PreloaderScene.js
     - Display logo in preload()
     - Create progress bar graphics
     - Load sound effects (pop, explosion, fanfare)
@@ -226,22 +226,22 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test progress bar updates
     - Test scene transition to GameScene
 
-- [ ] 11. Checkpoint - Ensure scene and UI tests pass
+- [x] 11. Checkpoint - Ensure scene and UI tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 12. Implement GameScene core structure
-  - [ ] 12.1 Create GameScene.js with constructor and properties
+  - [x] 12.1 Create GameScene.js with constructor and properties
     - Initialize worldWidth (800), worldHeight (600)
     - Initialize lives (3), score (0), currentBubbleCount (10)
     - Add properties for playerBubble, aiBubbles array, spawnSystem, hud, sounds
     - Add isPaused property for scenario restart pause state
     - _Requirements: 1.1, 1.6, 2.3, 7.1_
   
-  - [ ] 12.2 Implement init() method
+  - [x] 12.2 Implement init() method
     - Preserve bubbleCount across scene restarts
     - _Requirements: 4.7_
   
-  - [ ] 12.3 Implement create() method
+  - [x] 12.3 Implement create() method
     - Initialize game state (lives, score)
     - Create black background rectangle for Game_World (800x600, color #000000)
     - Create white 3-pixel border around Game_World (800x600 inner dimensions)
@@ -269,7 +269,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test white 3-pixel border around Game_World
 
 - [ ] 13. Implement GameScene game loop
-  - [ ] 13.1 Implement update() method
+  - [x] 13.1 Implement update() method
     - Skip all updates if isPaused is true
     - Update player bubble
     - Update all AI bubbles
@@ -283,7 +283,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 22: Continuous Movement**
     - **Validates: Requirements 9.3**
   
-  - [ ] 13.3 Implement checkCollisions() method
+  - [x] 13.3 Implement checkCollisions() method
     - Loop through AI bubbles
     - Check collision with player using CollisionSystem
     - Handle consumption (increase score, grow player, remove AI, play pop sound)
@@ -298,7 +298,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 25: Explosion Sound on Death**
     - **Validates: Requirements 13.2**
   
-  - [ ] 13.6 Implement maintainBubbleCount() method
+  - [x] 13.6 Implement maintainBubbleCount() method
     - Spawn new bubbles until reaching target count
     - Pass player position to spawnBubble for distance check
     - _Requirements: 4.2, 4.8_
@@ -307,7 +307,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 13: AI Bubble Count Invariant**
     - **Validates: Requirements 4.6, 4.7, 4.8**
   
-  - [ ] 13.8 Implement render() method
+  - [x] 13.8 Implement render() method
     - Render all AI bubbles
     - Render player bubble
     - Update HUD
@@ -318,7 +318,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Validates: Requirements 5.1**
 
 - [ ] 14. Implement GameScene state transitions
-  - [ ] 14.1 Implement handleDeath() method
+  - [x] 14.1 Implement handleDeath() method
     - Decrement lives
     - If lives > 0: play fanfare, increment currentBubbleCount by 2, call restartScenarioWithPause()
     - If lives = 0: call handleGameOver()
@@ -336,7 +336,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 27: Progressive Bubble Count**
     - **Validates: Requirements 4.7**
   
-  - [ ] 14.5 Implement handleWin() method
+  - [x] 14.5 Implement handleWin() method
     - Play fanfare sound
     - Increment currentBubbleCount by 2
     - Call restartScenarioWithPause()
@@ -346,7 +346,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 10: Win Condition Reset**
     - **Validates: Requirements 1.4**
   
-  - [ ] 14.7 Implement restartScenarioWithPause() method
+  - [x] 14.7 Implement restartScenarioWithPause() method
     - Set isPaused to true
     - Use Phaser time.delayedCall to wait 2000ms
     - After delay: set isPaused to false, reset player bubble size to 30, clear AI_Bubble list, call spawnInitialBubbles(), restart scene
@@ -364,13 +364,13 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 30: Player Size Reset on Scenario Restart**
     - **Validates: Requirements 1.7**
   
-  - [ ] 14.11 Implement handleGameOver() method
+  - [x] 14.11 Implement handleGameOver() method
     - Pause scene
     - Show game over display via HUD
     - _Requirements: 1.3, 7.2, 7.3_
 
 - [ ] 15. Implement GameScene input handling
-  - [ ] 15.1 Implement setupInput() method
+  - [x] 15.1 Implement setupInput() method
     - Add pointermove listener to set player target when pointer is down
     - Add pointerdown listener to set player target
     - _Requirements: 2.1, 9.1, 9.2, 9.3_
@@ -379,16 +379,16 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 23: Input Coordinate Normalization**
     - **Validates: Requirements 9.4**
   
-  - [ ] 15.3 Implement spawnInitialBubbles() helper method
+  - [x] 15.3 Implement spawnInitialBubbles() helper method
     - Clear AI_Bubble list to ensure clean state
     - Spawn bubbles up to target count
     - _Requirements: 1.8, 4.6, 4.9, 4.10_
 
-- [ ] 16. Checkpoint - Ensure GameScene tests pass
+- [x] 16. Checkpoint - Ensure GameScene tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 17. Create main.js and wire everything together
-  - [ ] 17.1 Create main.js with Phaser configuration
+  - [x] 17.1 Create main.js with Phaser configuration
     - Import all scene classes
     - Configure Phaser with 800x600 dimensions
     - Set backgroundColor to #808080 (dark gray screen background)
@@ -405,7 +405,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test BootScene → PreloaderScene → GameScene transitions
 
 - [ ] 18. Implement PWA features
-  - [ ] 18.1 Create service-worker.js
+  - [x] 18.1 Create service-worker.js
     - Define cache name and URLs to cache
     - Implement install event handler to cache assets
     - Implement fetch event handler for cache-first strategy
@@ -415,7 +415,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test cache storage
     - Test offline functionality
   
-  - [ ] 18.3 Update index.html with service worker registration
+  - [x] 18.3 Update index.html with service worker registration
     - Add service worker registration script
     - Add manifest link
     - _Requirements: 8.1, 8.2_
@@ -425,15 +425,15 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test service worker registration
 
 - [ ] 19. Create placeholder assets
-  - [ ] 19.1 Create placeholder logo.png
+  - [x] 19.1 Create placeholder logo.png
     - Create simple 200x200 logo image
     - _Requirements: 8.5_
   
-  - [ ] 19.2 Create placeholder sound files
+  - [x] 19.2 Create placeholder sound files
     - Create or source pop.wav, explosion.mp3, fanfare.wav
     - _Requirements: 13.4_
   
-  - [ ] 19.3 Create PWA icons
+  - [x] 19.3 Create PWA icons
     - Create icon-192.png and icon-512.png
     - _Requirements: 8.2_
 
@@ -467,7 +467,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test touch input on mobile/tablet
     - _Requirements: 9.1, 9.2, 9.4_
 
-- [ ] 21. Final checkpoint - Ensure all tests pass
+- [x] 21. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
