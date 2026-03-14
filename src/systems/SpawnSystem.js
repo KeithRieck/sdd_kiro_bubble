@@ -6,6 +6,7 @@
  */
 
 import AIBubble from '../entities/AIBubble.js';
+import ShrinkBubble from '../entities/ShrinkBubble.js';
 
 class SpawnSystem {
   /**
@@ -148,6 +149,13 @@ class SpawnSystem {
   spawnBubble(playerSize, playerX, playerY, currentCount) {
     if (currentCount >= this.targetBubbleCount) {
       return null;
+    }
+
+    // 10% chance to spawn a ShrinkBubble instead of an AIBubble
+    if (Math.random() < 0.1) {
+      const position = this.getRandomPosition(20, playerX, playerY);
+      const velocity = this.getRandomVelocity();
+      return new ShrinkBubble(this.scene, position.x, position.y, velocity.x, velocity.y);
     }
 
     const sizeRange = this.calculateSizeRange(playerSize);

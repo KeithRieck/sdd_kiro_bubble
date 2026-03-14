@@ -37,6 +37,7 @@ class PreloaderScene extends Phaser.Scene {
     this.load.audio('pop', 'assets/audio/pop.wav');
     this.load.audio('explosion', 'assets/audio/explosion.wav');
     this.load.audio('fanfare', 'assets/audio/fanfare.wav');
+    this.load.audio('shrink', 'assets/audio/shrink.wav');
   }
 
   /**

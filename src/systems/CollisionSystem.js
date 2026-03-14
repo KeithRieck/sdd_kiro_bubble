@@ -28,6 +28,9 @@ class CollisionSystem {
    * @returns {Object} Result with action and data
    */
   static resolveCollision(player, aiBubble) {
+    if (aiBubble.constructor.name === 'ShrinkBubble') {
+      return { action: 'shrink', score: 0, growth: 0 };
+    }
     if (player.size > aiBubble.size) {
       return {
         action: 'consume',

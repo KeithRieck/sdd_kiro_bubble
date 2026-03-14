@@ -13,7 +13,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - Set up basic HTML structure with game container
   - _Requirements: 8.1, 8.2_
 
-- [ ] 2. Implement abstract Bubble base class
+- [x] 2. Implement abstract Bubble base class
   - [x] 2.1 Create Bubble.js with constructor and common properties
     - Implement constructor with scene, x, y, size parameters
     - Add abstract class check to prevent direct instantiation
@@ -29,7 +29,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Define abstract methods that throw errors if not overridden
     - _Requirements: 5.1_
 
-- [ ] 3. Implement PlayerBubble class
+- [x] 3. Implement PlayerBubble class
   - [x] 3.1 Create PlayerBubble.js extending Bubble
     - Implement constructor with default size 30
     - Add targetX and targetY properties
@@ -67,7 +67,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Draw gray circle with blue border using Phaser Graphics
     - _Requirements: 5.2_
 
-- [ ] 4. Implement AIBubble class
+- [x] 4. Implement AIBubble class
   - [x] 4.1 Create AIBubble.js extending Bubble
     - Implement constructor with velocityX and velocityY parameters
     - Add color property with pastel color generation
@@ -91,7 +91,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Draw colored circle with no border using Phaser Graphics
     - _Requirements: 5.3_
 
-- [ ] 4.6 Implement ShrinkBubble class
+- [x] 4.6 Implement ShrinkBubble class
   - Create ShrinkBubble.js extending Bubble
   - Fixed size of 20 pixels, red color (0xFF0000)
   - Implement update() with velocity-based movement and boundary bouncing
@@ -106,12 +106,17 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - **Property 40: Shrink Bubble Boundary Bouncing**
   - **Validates: Requirements 14.7**
 
-- [ ] 5. Implement CollisionSystem
+- [x] 5. Implement CollisionSystem
   - [x] 5.1 Create CollisionSystem.js with static methods
     - Implement checkCollision() using circle-to-circle distance
     - Implement resolveCollision() returning action and data
     - Handle ShrinkBubble collision type returning 'shrink' action
     - _Requirements: 3.1, 11.1, 11.2, 11.3, 14.4_
+
+  - [x] 5.6 Add ShrinkBubble handling to resolveCollision()
+    - Check if bubble is a ShrinkBubble (bubble.constructor.name === 'ShrinkBubble')
+    - Return { action: 'shrink', score: 0, growth: 0 } for ShrinkBubble collisions
+    - _Requirements: 14.4_
   
   - [ ]* 5.2 Write property test for collision detection
     - **Property 4: Collision Detection by Distance**
@@ -132,7 +137,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
 - [x] 6. Checkpoint - Ensure core entity tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement SpawnSystem
+- [x] 7. Implement SpawnSystem
   - [x] 7.1 Create SpawnSystem.js with constructor
     - Initialize with scene, worldWidth, worldHeight, initialBubbleCount
     - Add targetBubbleCount property (starts at 10)
@@ -195,7 +200,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 36: Shrink Bubble Spawn Rate**
     - **Validates: Requirements 14.2**
 
-- [ ] 8. Implement HUD class
+- [x] 8. Implement HUD class
   - [x] 8.1 Create HUD.js with constructor
     - Create score and lives text elements using Phaser
     - Position outside Game_World area (e.g., top-left corner)
@@ -223,7 +228,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 21: Game Over Display**
     - **Validates: Requirements 7.2, 7.3**
 
-- [ ] 9. Implement BootScene
+- [x] 9. Implement BootScene
   - [x] 9.1 Create BootScene.js
     - Implement preload() to load logo image
     - Implement create() to transition to PreloaderScene
@@ -233,7 +238,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test logo loading
     - Test scene transition to PreloaderScene
 
-- [ ] 10. Implement PreloaderScene
+- [x] 10. Implement PreloaderScene
   - [x] 10.1 Create PreloaderScene.js
     - Display logo in preload()
     - Create progress bar graphics
@@ -250,13 +255,17 @@ This implementation plan breaks down the bubble consumption game into discrete c
 - [x] 11. Checkpoint - Ensure scene and UI tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 12. Implement GameScene core structure
+- [x] 12. Implement GameScene core structure
   - [x] 12.1 Create GameScene.js with constructor and properties
     - Initialize worldWidth (800), worldHeight (600)
     - Initialize lives (3), score (0), currentBubbleCount (10)
     - Add properties for playerBubble, aiBubbles array, shrinkBubbles array, spawnSystem, hud, sounds
     - Add isPaused property for scenario restart pause state
     - _Requirements: 1.1, 1.6, 2.3, 7.1, 14.1_
+
+  - [x] 12.7 Add shrinkBubbles array to GameScene constructor
+    - Add this.shrinkBubbles = [] property alongside aiBubbles
+    - _Requirements: 14.1_
   
   - [x] 12.2 Implement init() method
     - Preserve bubbleCount across scene restarts
@@ -266,13 +275,17 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Initialize game state (lives, score)
     - Create black background rectangle for Game_World (800x600, color #000000)
     - Create white 3-pixel border around Game_World (800x600 inner dimensions)
-    - Load sound effects
+    - Load sound effects including 'shrink'
     - Create PlayerBubble at center with size 30
     - Initialize SpawnSystem with currentBubbleCount
     - Call spawnInitialBubbles()
     - Set up input handlers
     - Create HUD
-    - _Requirements: 1.1, 5.5, 5.6, 7.1, 13.4_
+    - _Requirements: 1.1, 5.5, 5.6, 7.1, 13.4, 14.5_
+
+  - [x] 12.8 Add sounds.shrink to create() method
+    - Load 'shrink' sound effect alongside pop, explosion, fanfare
+    - _Requirements: 14.5_
   
   - [ ]* 12.4 Write property test for Game_World background color
     - **Property 32: Game World Background Color**
@@ -289,7 +302,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test black Game_World background exists
     - Test white 3-pixel border around Game_World
 
-- [ ] 13. Implement GameScene game loop
+- [x] 13. Implement GameScene game loop
   - [x] 13.1 Implement update() method
     - Skip all updates if isPaused is true
     - Update player bubble
@@ -299,10 +312,10 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Check win condition (size >= 100)
     - Call render()
     - _Requirements: 1.4, 1.6, 10.1, 10.2_
-  
-  - [ ]* 13.2 Write property test for continuous movement
-    - **Property 22: Continuous Movement**
-    - **Validates: Requirements 9.3**
+
+  - [x] 13.10 Update update() to iterate shrinkBubbles
+    - Add shrinkBubbles.forEach(bubble => bubble.update(delta)) alongside aiBubbles update
+    - _Requirements: 14.8_
   
   - [x] 13.3 Implement checkCollisions() method
     - Loop through AI bubbles
@@ -311,6 +324,11 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Handle death (play explosion sound, call handleDeath())
     - Loop through shrink bubbles, handle shrink collision (reset player to 30px, remove shrink bubble, play shrink sound)
     - _Requirements: 3.1, 3.2, 11.4, 13.1, 13.2, 14.4, 14.5_
+
+  - [x] 13.11 Add shrink bubble collision loop to checkCollisions()
+    - After the AI bubble loop, add a second loop over shrinkBubbles
+    - On collision: set playerBubble.size = 30, splice shrinkBubble from array, play shrink sound
+    - _Requirements: 14.4, 14.5, 14.6_
 
   - [ ]* 13.3a Write property test for ShrinkBubble collision behavior
     - **Property 38: Shrink Bubble Collision Behavior**
@@ -345,7 +363,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - **Property 19: Bubble Radius Rendering**
     - **Validates: Requirements 5.1**
 
-- [ ] 14. Implement GameScene state transitions
+- [x] 14. Implement GameScene state transitions
   - [x] 14.1 Implement handleDeath() method
     - Decrement lives
     - If lives > 0: play fanfare, increment currentBubbleCount by 2, call restartScenarioWithPause()
@@ -379,6 +397,10 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Use Phaser time.delayedCall to wait 2000ms
     - After delay: set isPaused to false, reset player bubble size to 30, clear AI_Bubble and Shrink_Bubble lists, call spawnInitialBubbles(), restart scene
     - _Requirements: 1.6, 1.7, 1.8, 4.9, 4.10_
+
+  - [x] 14.12 Update restartScenarioWithPause() to clear shrinkBubbles
+    - Clear this.shrinkBubbles = [] alongside this.aiBubbles = [] before restart
+    - _Requirements: 4.9, 4.10_
   
   - [ ]* 14.8 Write property test for AI_Bubble list cleared on restart
     - **Property 34: AI Bubble List Cleared on Restart**
@@ -397,7 +419,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Show game over display via HUD
     - _Requirements: 1.3, 7.2, 7.3_
 
-- [ ] 15. Implement GameScene input handling
+- [x] 15. Implement GameScene input handling
   - [x] 15.1 Implement setupInput() method
     - Add pointermove listener to set player target when pointer is down
     - Add pointerdown listener to set player target
@@ -410,12 +432,25 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - [x] 15.3 Implement spawnInitialBubbles() helper method
     - Clear AI_Bubble and Shrink_Bubble lists to ensure clean state
     - Spawn bubbles up to target count, routing to correct arrays by type
-    - _Requirements: 1.8, 4.6, 4.9, 4.10, 14.2_
+
+  - [x] 15.4 Update spawnInitialBubbles() to route ShrinkBubbles to shrinkBubbles array
+    - Route spawned ShrinkBubble instances to this.shrinkBubbles, AIBubble instances to this.aiBubbles
+    - Use totalBubbles = aiBubbles.length + shrinkBubbles.length for capacity check
+    - _Requirements: 1.8, 4.9, 4.10, 14.2_
+
+  - [x] 15.5 Update maintainBubbleCount() to track shrinkBubbles in total count
+    - Use totalBubbles = aiBubbles.length + shrinkBubbles.length for capacity check
+    - Route spawned ShrinkBubble instances to shrinkBubbles array
+    - _Requirements: 4.8, 14.2_
+
+  - [x] 15.6 Update render() to render shrinkBubbles
+    - Add shrinkBubbles.forEach(bubble => bubble.render()) alongside aiBubbles render
+    - _Requirements: 14.3_
 
 - [x] 16. Checkpoint - Ensure GameScene tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 17. Create main.js and wire everything together
+- [x] 17. Create main.js and wire everything together
   - [x] 17.1 Create main.js with Phaser configuration
     - Import all scene classes
     - Configure Phaser with 800x600 dimensions
@@ -432,7 +467,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
   - [ ]* 17.3 Write integration test for scene flow
     - Test BootScene → PreloaderScene → GameScene transitions
 
-- [ ] 18. Implement PWA features
+- [x] 18. Implement PWA features
   - [x] 18.1 Create service-worker.js
     - Define cache name and URLs to cache
     - Implement install event handler to cache assets
@@ -452,12 +487,12 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Test manifest validity
     - Test service worker registration
 
-- [ ] 19. Create placeholder assets
+- [x] 19. Create placeholder assets
   - [x] 19.1 Create placeholder logo.png
     - Create simple 200x200 logo image
     - _Requirements: 8.5_
   
-  - [x] 19.2 Create placeholder sound files
+  - [ ] 19.2 Create placeholder sound files
     - Create or source pop.wav, explosion.mp3, fanfare.wav, shrink.wav
     - _Requirements: 13.4, 14.5_
   
@@ -465,7 +500,7 @@ This implementation plan breaks down the bubble consumption game into discrete c
     - Create icon-192.png and icon-512.png
     - _Requirements: 8.2_
 
-- [ ] 20. Final integration and testing
+- [x] 20. Final integration and testing
   - [ ]* 20.1 Test complete game flow
     - Verify all scenes transition correctly
     - Verify player can consume bubbles and grow

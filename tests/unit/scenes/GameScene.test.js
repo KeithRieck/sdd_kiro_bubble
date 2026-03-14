@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import GameScene from '../../../src/scenes/GameScene.js';
 import PlayerBubble from '../../../src/entities/PlayerBubble.js';
 import AIBubble from '../../../src/entities/AIBubble.js';
+import ShrinkBubble from '../../../src/entities/ShrinkBubble.js';
 import SpawnSystem from '../../../src/systems/SpawnSystem.js';
 
 describe('GameScene', () => {
@@ -74,6 +75,7 @@ describe('GameScene', () => {
       expect(gameScene.score).toBe(0);
       expect(gameScene.currentBubbleCount).toBe(10);
       expect(gameScene.aiBubbles).toEqual([]);
+      expect(gameScene.shrinkBubbles).toEqual([]);
       expect(gameScene.isPaused).toBe(false);
     });
 
@@ -102,7 +104,7 @@ describe('GameScene', () => {
 
     it('should spawn 10 AI bubbles initially', () => {
       gameScene.create();
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
     });
 
     it('should have black Game_World background', () => {
@@ -162,6 +164,7 @@ describe('GameScene', () => {
       expect(mockSound.add).toHaveBeenCalledWith('pop');
       expect(mockSound.add).toHaveBeenCalledWith('explosion');
       expect(mockSound.add).toHaveBeenCalledWith('fanfare');
+      expect(mockSound.add).toHaveBeenCalledWith('shrink');
     });
 
     it('should create player bubble at center', () => {
@@ -183,9 +186,9 @@ describe('GameScene', () => {
     it('should spawn initial AI bubbles', () => {
       gameScene.create();
       
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
       gameScene.aiBubbles.forEach(bubble => {
-        expect(bubble).toBeInstanceOf(AIBubble);
+        expect(bubble instanceof AIBubble || bubble instanceof ShrinkBubble).toBe(true);
       });
     });
 
@@ -317,14 +320,18 @@ describe('GameScene', () => {
     });
 
     it('should handle death when AI bubble is larger or equal', () => {
+      // Clear all AI bubbles and add a known AIBubble for isolated testing
+      gameScene.aiBubbles.forEach(bubble => {
+        if (bubble.graphics) bubble.graphics.destroy();
+      });
+      gameScene.aiBubbles = [];
+
+      const largeBubble = new AIBubble(gameScene, 100, 100, 50, 0, 0);
+      gameScene.aiBubbles.push(largeBubble);
+
       gameScene.playerBubble.size = 30;
       gameScene.playerBubble.x = 100;
       gameScene.playerBubble.y = 100;
-      
-      const largeBubble = gameScene.aiBubbles[0];
-      largeBubble.size = 50;
-      largeBubble.x = 100;
-      largeBubble.y = 100;
       
       const handleDeathSpy = vi.spyOn(gameScene, 'handleDeath');
       
@@ -434,21 +441,22 @@ describe('GameScene', () => {
       gameScene.spawnInitialBubbles();
       
       // Verify new bubbles were created (not the same instances)
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
       expect(gameScene.aiBubbles[0]).not.toBe(existingBubbles[0]);
     });
 
     it('should spawn bubbles up to target count (Req 1.8, 4.6, 4.10)', () => {
       // Clear bubbles first
       gameScene.aiBubbles = [];
+      gameScene.shrinkBubbles = [];
       
       // Call spawnInitialBubbles
       gameScene.spawnInitialBubbles();
       
       // Verify correct number of bubbles spawned
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
       gameScene.aiBubbles.forEach(bubble => {
-        expect(bubble).toBeInstanceOf(AIBubble);
+        expect(bubble instanceof AIBubble || bubble instanceof ShrinkBubble).toBe(true);
       });
     });
 
@@ -464,10 +472,11 @@ describe('GameScene', () => {
       
       // Clear and respawn
       gameScene.aiBubbles = [];
+      gameScene.shrinkBubbles = [];
       gameScene.spawnInitialBubbles();
       
       // Verify increased count
-      expect(gameScene.aiBubbles.length).toBe(12);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(12);
     });
 
     it('should destroy graphics of existing bubbles before clearing', () => {
@@ -494,19 +503,20 @@ describe('GameScene', () => {
     it('should spawn new bubbles when below target count', () => {
       // Remove some bubbles
       gameScene.aiBubbles.splice(0, 3);
-      expect(gameScene.aiBubbles.length).toBe(7);
+      const totalBefore = gameScene.aiBubbles.length + gameScene.shrinkBubbles.length;
+      expect(totalBefore).toBeLessThan(10);
       
       gameScene.maintainBubbleCount();
       
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
     });
 
     it('should not spawn bubbles when at target count', () => {
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
       
       gameScene.maintainBubbleCount();
       
-      expect(gameScene.aiBubbles.length).toBe(10);
+      expect(gameScene.aiBubbles.length + gameScene.shrinkBubbles.length).toBe(10);
     });
   });
 

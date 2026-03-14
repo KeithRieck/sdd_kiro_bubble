@@ -73,6 +73,7 @@ describe('PreloaderScene', () => {
     expect(mockLoad.audio).toHaveBeenCalledWith('pop', 'assets/audio/pop.wav');
     expect(mockLoad.audio).toHaveBeenCalledWith('explosion', 'assets/audio/explosion.wav');
     expect(mockLoad.audio).toHaveBeenCalledWith('fanfare', 'assets/audio/fanfare.wav');
+    expect(mockLoad.audio).toHaveBeenCalledWith('shrink', 'assets/audio/shrink.wav');
   });
 
   it('should update progress bar on progress event', () => {

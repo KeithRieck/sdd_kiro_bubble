@@ -197,7 +197,7 @@ describe('GameScene Properties', () => {
             gameScene.create();
             
             // Verify initial count
-            if (gameScene.aiBubbles.length !== targetCount) {
+            if (gameScene.aiBubbles.length + gameScene.shrinkBubbles.length !== targetCount) {
               return false;
             }
             
@@ -214,7 +214,7 @@ describe('GameScene Properties', () => {
             gameScene.maintainBubbleCount();
             
             // Count should be restored to target
-            return gameScene.aiBubbles.length === targetCount;
+            return gameScene.aiBubbles.length + gameScene.shrinkBubbles.length === targetCount;
           }
         ),
         { numRuns: 100 }
@@ -235,12 +235,12 @@ describe('GameScene Properties', () => {
             gameScene.currentBubbleCount = targetCount;
             gameScene.create();
             
-            const countBefore = gameScene.aiBubbles.length;
+            const countBefore = gameScene.aiBubbles.length + gameScene.shrinkBubbles.length;
             
             // Call maintainBubbleCount when already at target
             gameScene.maintainBubbleCount();
             
-            const countAfter = gameScene.aiBubbles.length;
+            const countAfter = gameScene.aiBubbles.length + gameScene.shrinkBubbles.length;
             
             // Count should remain the same
             return countBefore === countAfter && countAfter === targetCount;
@@ -367,14 +367,13 @@ describe('GameScene Properties', () => {
             gameScene.playerBubble.y = 300;
             
             // Ensure at least one AI bubble exists
-            if (gameScene.aiBubbles.length === 0) {
-              // Manually create an AI bubble if spawn system didn't create any
-              const aiBubble = new AIBubble(freshMockScene, 400, 300, aiSize, 0, 0);
-              gameScene.aiBubbles.push(aiBubble);
-            }
+            // Replace all bubbles with a known AIBubble for deterministic testing
+            gameScene.aiBubbles.forEach(b => { if (b.graphics) b.graphics.destroy(); });
+            gameScene.aiBubbles = [];
+            const aiBubble = new AIBubble(freshMockScene, 400, 300, aiSize, 0, 0);
+            gameScene.aiBubbles.push(aiBubble);
             
-            // Get first AI bubble and ensure it's smaller and overlapping
-            const aiBubble = gameScene.aiBubbles[0];
+            // Ensure it's smaller and overlapping
             aiBubble.size = aiSize;
             // Position at exact same location to guarantee collision
             aiBubble.x = gameScene.playerBubble.x;
@@ -438,15 +437,13 @@ describe('GameScene Properties', () => {
             gameScene.playerBubble.x = 400;
             gameScene.playerBubble.y = 300;
             
-            // Ensure at least one AI bubble exists
-            if (gameScene.aiBubbles.length === 0) {
-              // Manually create an AI bubble if spawn system didn't create any
-              const aiBubble = new AIBubble(freshMockScene, 400, 300, adjustedAiSize, 0, 0);
-              gameScene.aiBubbles.push(aiBubble);
-            }
+            // Replace all bubbles with a known AIBubble for deterministic testing
+            gameScene.aiBubbles.forEach(b => { if (b.graphics) b.graphics.destroy(); });
+            gameScene.aiBubbles = [];
+            const aiBubble = new AIBubble(freshMockScene, 400, 300, adjustedAiSize, 0, 0);
+            gameScene.aiBubbles.push(aiBubble);
             
             // Create AI bubble at overlapping position (ensure collision)
-            const aiBubble = gameScene.aiBubbles[0];
             aiBubble.size = adjustedAiSize;
             aiBubble.x = 400;  // Same position as player
             aiBubble.y = 300;  // Same position as player

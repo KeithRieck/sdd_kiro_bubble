@@ -63,6 +63,7 @@ The game isn't challenging enough, so I add a new kind of bubble:
     * Shrink_Bubbles have a diameter of 20 pixels and are colored red.
     * Whenever a Player_Bubble collides with a Shrink_Bubble, game will play a Shrink sound and the Player_Bubble will change size to 30 pixels and the Shrink_bubble will be destroyed.
 
+When executing the task list, Kiro created the ShrinkBubble class, but for some reason forgot to add the ShrinkBubble logic elsewhere. 
 
 ---
 

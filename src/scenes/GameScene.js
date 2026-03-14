@@ -1,4 +1,5 @@
 import PlayerBubble from '../entities/PlayerBubble.js';
+import ShrinkBubble from '../entities/ShrinkBubble.js';
 import CollisionSystem from '../systems/CollisionSystem.js';
 import SpawnSystem from '../systems/SpawnSystem.js';
 import HUD from '../ui/HUD.js';
@@ -25,6 +26,7 @@ class GameScene extends Phaser.Scene {
     // Game entities and systems
     this.playerBubble = null;
     this.aiBubbles = [];
+    this.shrinkBubbles = [];
     this.spawnSystem = null;
     this.hud = null;
     this.sounds = {};
@@ -72,6 +74,7 @@ class GameScene extends Phaser.Scene {
     this.sounds.pop = this.sound.add('pop');
     this.sounds.explosion = this.sound.add('explosion');
     this.sounds.fanfare = this.sound.add('fanfare');
+    this.sounds.shrink = this.sound.add('shrink');
     
     // Create player bubble at center
     this.playerBubble = new PlayerBubble(
@@ -115,6 +118,9 @@ class GameScene extends Phaser.Scene {
 
     // Update AI bubbles
     this.aiBubbles.forEach(bubble => bubble.update(delta));
+
+    // Update shrink bubbles
+    this.shrinkBubbles.forEach(bubble => bubble.update(delta));
 
     // Check collisions
     this.checkCollisions();
@@ -164,6 +170,19 @@ class GameScene extends Phaser.Scene {
           this.handleDeath();
           break;  // Stop checking collisions after death
         }
+      }
+    }
+
+    // Check shrink bubble collisions
+    for (let i = this.shrinkBubbles.length - 1; i >= 0; i--) {
+      const shrinkBubble = this.shrinkBubbles[i];
+      if (CollisionSystem.checkCollision(this.playerBubble, shrinkBubble)) {
+        this.playerBubble.size = 30;
+        if (shrinkBubble.graphics) {
+          shrinkBubble.graphics.destroy();
+        }
+        this.shrinkBubbles.splice(i, 1);
+        this.sounds.shrink.play();
       }
     }
   }
@@ -218,6 +237,7 @@ class GameScene extends Phaser.Scene {
         }
       });
       this.aiBubbles = [];
+      this.shrinkBubbles = [];
       
       // Spawn initial bubbles for new scenario
       this.spawnInitialBubbles();
@@ -269,17 +289,23 @@ class GameScene extends Phaser.Scene {
       }
     });
     this.aiBubbles = [];
+    this.shrinkBubbles = [];
     
     const targetCount = this.spawnSystem.getTargetCount();
     for (let i = 0; i < targetCount; i++) {
+      const totalBubbles = this.aiBubbles.length + this.shrinkBubbles.length;
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
         this.playerBubble.x,
         this.playerBubble.y,
-        this.aiBubbles.length
+        totalBubbles
       );
       if (bubble) {
-        this.aiBubbles.push(bubble);
+        if (bubble.constructor.name === 'ShrinkBubble') {
+          this.shrinkBubbles.push(bubble);
+        } else {
+          this.aiBubbles.push(bubble);
+        }
       }
     }
   }
@@ -289,15 +315,20 @@ class GameScene extends Phaser.Scene {
    */
   maintainBubbleCount() {
     const targetCount = this.spawnSystem.getTargetCount();
-    while (this.aiBubbles.length < targetCount) {
+    while (this.aiBubbles.length + this.shrinkBubbles.length < targetCount) {
+      const totalBubbles = this.aiBubbles.length + this.shrinkBubbles.length;
       const bubble = this.spawnSystem.spawnBubble(
         this.playerBubble.size,
         this.playerBubble.x,
         this.playerBubble.y,
-        this.aiBubbles.length
+        totalBubbles
       );
       if (bubble) {
-        this.aiBubbles.push(bubble);
+        if (bubble.constructor.name === 'ShrinkBubble') {
+          this.shrinkBubbles.push(bubble);
+        } else {
+          this.aiBubbles.push(bubble);
+        }
       }
     }
   }
@@ -308,6 +339,9 @@ class GameScene extends Phaser.Scene {
   render() {
     // Render all AI bubbles
     this.aiBubbles.forEach(bubble => bubble.render());
+
+    // Render all shrink bubbles
+    this.shrinkBubbles.forEach(bubble => bubble.render());
     
     // Render player bubble
     this.playerBubble.render();
