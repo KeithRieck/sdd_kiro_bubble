@@ -17,13 +17,16 @@ const urlsToCache = [
   '/src/systems/SpawnSystem.js',
   '/src/ui/HUD.js',
   '/assets/images/logo.png',
+  '/assets/images/logo.svg',
   '/assets/images/icon-192.svg',
   '/assets/images/icon-512.svg',
+  '/assets/images/icon_128x128.png',
   '/assets/images/icon_192x192.png',
   '/assets/images/icon_512x512.png',
   '/assets/audio/pop.wav',
   '/assets/audio/explosion.wav',
   '/assets/audio/fanfare.wav',
+  '/assets/audio/shrink.wav',
   'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js'
 ];
 
