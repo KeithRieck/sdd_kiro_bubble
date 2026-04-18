@@ -6,7 +6,7 @@ The bubble consumption game is a browser-based Progressive Web Application (PWA)
 
 The architecture follows a client-side only approach with no server communication. All game logic, rendering, and state management execute in the browser. The Phaser framework provides the game loop, rendering pipeline, input handling, and physics system.
 
-The visual design features a dark gray screen background with a black Game_World area where gameplay occurs. A white 3-pixel border surrounds the Game_World (800x600 inner dimensions). The HUD displays score and lives outside the Game_World in 24-point Arial/Helvetica font. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds, clears the AI_Bubble list, resets the player bubble to 30 pixels, and spawns initial bubbles for the new scenario.
+The visual design features a dark gray screen background with a black Game_World area where gameplay occurs. A white 3-pixel border surrounds the Game_World (800x600 inner dimensions). The HUD displays score, lives, and level outside the Game_World in 24-point Arial/Helvetica font. When scenarios restart (from winning or losing a life), the game pauses for 2 seconds, clears the AI_Bubble list, resets the player bubble to 30 pixels, increments the level counter, and spawns initial bubbles for the new scenario. When the game ends, `stopGame()` halts all bubble movement and input, then waits for a click to restart from Level 1.
 
 Key design goals:
 - Smooth 30+ FPS gameplay on modern browsers
@@ -37,6 +37,7 @@ graph TD
     I --> K
     J --> L[Score Display]
     J --> M[Lives Display]
+    J --> N[Level Display]
 ```
 
 ### Technology Stack
@@ -691,6 +692,7 @@ class GameScene extends Phaser.Scene {
     this.worldHeight = 600;
     this.lives = 3;
     this.score = 0;
+    this.level = 1;
     this.playerBubble = null;
     this.aiBubbles = [];
     this.shrinkBubbles = [];
@@ -701,12 +703,17 @@ class GameScene extends Phaser.Scene {
     this.gameWorldBackground = null;  // Black background for Game_World
     this.gameWorldBorder = null;  // White border for Game_World
     this.isPaused = false;  // Track pause state for scenario restart
+    this.isStopped = false;  // Track stopped state for game over
   }
 
   init(data) {
     // Preserve bubble count across scene restarts
     if (data && data.bubbleCount !== undefined) {
       this.currentBubbleCount = data.bubbleCount;
+    }
+    // Preserve level across scene restarts
+    if (data && data.level !== undefined) {
+      this.level = data.level;
     }
   }
 
@@ -763,8 +770,8 @@ class GameScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    // Skip updates if paused
-    if (this.isPaused) {
+    // Skip updates if paused or stopped
+    if (this.isPaused || this.isStopped) {
       return;
     }
     
@@ -861,18 +868,35 @@ class GameScene extends Phaser.Scene {
       this.isPaused = false;
       // Reset player bubble size to 30 pixels
       this.playerBubble.size = 30;
+      // Increment level counter
+      this.level++;
       // Clear AI_Bubble and Shrink_Bubble lists before restart
       this.aiBubbles = [];
       this.shrinkBubbles = [];
       this.spawnInitialBubbles();
-      this.scene.restart({ bubbleCount: this.currentBubbleCount });
+      this.scene.restart({ bubbleCount: this.currentBubbleCount, level: this.level });
     });
   }
 
   handleGameOver() {
-    // Display final score and restart option
-    this.scene.pause();
+    // Stop all game activity and show game over screen
+    this.stopGame();
     this.hud.showGameOver(this.score);
+  }
+
+  /**
+   * Stop all bubble movement and game actions.
+   * Removes all input listeners and registers a single pointerdown
+   * listener that restarts the scene at Level 1, Score 0.
+   */
+  stopGame() {
+    this.isStopped = true;
+    // Remove all existing input listeners
+    this.input.removeAllListeners();
+    // Register single restart listener
+    this.input.once('pointerdown', () => {
+      this.scene.restart({ bubbleCount: 10, level: 1, score: 0 });
+    });
   }
 
   setupInput() {
@@ -939,14 +963,14 @@ class GameScene extends Phaser.Scene {
     this.aiBubbles.forEach(bubble => bubble.render());
     this.shrinkBubbles.forEach(bubble => bubble.render());
     this.playerBubble.render();
-    this.hud.render(this.score, this.lives);
+    this.hud.render(this.score, this.lives, this.level);
   }
 }
 ```
 
 ### HUD
 
-Manages the heads-up display for score and lives.
+Manages the heads-up display for score, lives, and level.
 
 ```javascript
 class HUD {
@@ -954,12 +978,13 @@ class HUD {
     this.scene = scene;
     this.scoreText = null;
     this.livesText = null;
+    this.levelText = null;
     this.gameOverText = null;
     this.createUI();
   }
 
   createUI() {
-    // Display score and lives outside Game_World in 24pt Arial/Helvetica
+    // Display score, lives, and level outside Game_World in 24pt Arial/Helvetica
     this.scoreText = this.scene.add.text(10, 10, 'Score: 0', {
       fontSize: '24pt',
       fontFamily: 'Arial, Helvetica, sans-serif',
@@ -971,11 +996,18 @@ class HUD {
       fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
+
+    this.levelText = this.scene.add.text(10, 70, 'Level: 1', {
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      fill: '#ffffff'
+    });
   }
 
-  render(score, lives) {
+  render(score, lives, level) {
     this.scoreText.setText(`Score: ${score}`);
     this.livesText.setText(`Lives: ${lives}`);
+    this.levelText.setText(`Level: ${level}`);
   }
 
   showGameOver(finalScore) {
@@ -990,10 +1022,6 @@ class HUD {
       }
     );
     this.gameOverText.setOrigin(0.5);
-
-    this.scene.input.once('pointerdown', () => {
-      this.scene.scene.restart();
-    });
   }
 }
 ```
@@ -1079,16 +1107,17 @@ The game state is managed entirely within the GameScene instance:
 {
   lives: number,              // Current lives remaining (0-3)
   score: number,              // Current score (sum of consumed bubble sizes)
+  level: number,              // Current level counter (starts at 1, increments on each restart)
   playerBubble: PlayerBubble, // Player entity
   aiBubbles: AIBubble[],      // Array of AI entities
   shrinkBubbles: ShrinkBubble[], // Array of Shrink bubble entities
   worldWidth: 800,            // Game world width in pixels
   worldHeight: 600,           // Game world height in pixels
-  isGameOver: boolean,        // Game over state flag
   currentBubbleCount: number, // Current target bubble count (starts at 10, +2 per reset)
   gameWorldBackground: object, // Black background rectangle for Game_World
   gameWorldBorder: object,    // White border graphics for Game_World (3px thickness)
   isPaused: boolean,          // Pause state for scenario restart (2-second delay)
+  isStopped: boolean,         // Stopped state for game over (halts all updates and input)
   sounds: {                   // Sound effect references
     pop: object,              // Pop sound for consumption
     explosion: object,        // Explosion sound for death
@@ -1424,6 +1453,36 @@ For any ShrinkBubble between boundary collisions, its velocity vector should rem
 For any ShrinkBubble that reaches a game world boundary, its velocity component perpendicular to that boundary should reverse direction (multiply by -1).
 
 **Validates: Requirements 14.7**
+
+### Property 41: Level Starts at One
+
+When the game begins, the level counter should be 1.
+
+**Validates: Requirements 1.9**
+
+### Property 42: Level Increments on Restart
+
+For any scenario restart event (from winning or losing a life), the level counter should increase by exactly 1.
+
+**Validates: Requirements 1.10**
+
+### Property 43: Level Always Visible
+
+For any game state, the level display element should exist and show the current level number.
+
+**Validates: Requirements 6.6**
+
+### Property 44: stopGame Halts Updates
+
+After stopGame() is called, no AI bubbles or shrink bubbles should change position across subsequent update frames.
+
+**Validates: Requirements 7.5, 7.6**
+
+### Property 45: stopGame Restart Resets Level and Score
+
+After stopGame() is called, a pointerdown event should restart the scene with level = 1 and score = 0.
+
+**Validates: Requirements 7.7, 7.8**
 
 ## Error Handling
 

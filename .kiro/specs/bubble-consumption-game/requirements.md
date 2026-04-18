@@ -16,6 +16,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 - **PWA**: Progressive Web Application with offline capability
 - **Game_Session**: A single playthrough from start to game over
 - **Score**: An integer
+- **Level**: A counter starting at 1 that increments each time the scenario restarts
 
 ## Requirements
 
@@ -33,6 +34,8 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 6. WHEN the scenario restarts (either from winning by reaching 100 pixels or losing a life), THE Game SHALL pause for 2 seconds.
 7. WHEN the 2 second pause completes, THE Game SHALL reduce the Player_Bubble Size to 30 pixels.
 8. WHEN the scenario restarts, THE Game SHALL spawn initial AI_Bubbles for the new scenario.
+9. THE Game SHALL track a Level counter starting at 1 when the game begins.
+10. WHEN the scenario restarts, THE Game SHALL increment the Level counter by 1.
 
 ### Requirement 2: Player Bubble Control
 
@@ -98,6 +101,8 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 3. THE Game SHALL render the Score and lives count in 16 point Arial or Helvetica font
 4. THE Game SHALL update the displayed Score immediately when the Player_Bubble consumes an AI_Bubble
 5. THE Game SHALL update the displayed lives count immediately when a life is lost
+6. THE Game SHALL display the current Level number outside the Game_World at all times
+7. THE Game SHALL update the displayed Level immediately when the scenario restarts
 
 
 ### Requirement 7: Game Session Management
@@ -110,6 +115,11 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 2. WHEN a Game_Session ends, THE Game SHALL display the final Score
 3. THE Game SHALL provide a restart option after a Game_Session ends
 4. THE Game SHALL track and display the number of AI_Bubbles consumed during the current Game_Session
+5. THE GameScene SHALL provide a stopGame() method that stops all bubble movement and disables all game actions
+6. WHEN stopGame() is called, THE Game SHALL halt updates to all AI_Bubbles and Shrink_Bubbles
+7. WHEN stopGame() is called, THE Game SHALL remove all existing input event listeners
+8. WHEN stopGame() is called, THE Game SHALL register a single pointerdown listener that restarts the scene with Level 1 and Score 0
+9. WHEN handleGameOver() is called, THE Game SHALL call stopGame() instead of pausing the scene
 
 ### Requirement 8: Progressive Web Application Features
 

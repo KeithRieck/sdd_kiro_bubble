@@ -8,7 +8,7 @@ This was my first experiment in [Spec Driven Development](https://en.wikipedia.o
 
 The Kiro tool walks you through a series of steps:
 
-1. **Setup**: Initially, it asks for a short summary of your project.  From this, it generates an initial [`requirements.md`](.kiro/specs/bubble-consumption-game/requirements.md) document.  My initial description was:
+1. **Setup**: Initially, it asks for a short summary of your project.  From this, it generates an initial [`requirements.md`](.kiro/specs/bubble-consumption-game/requirements.md) document. Interestingly, requirements are specified in the [EARS](https://en.wikipedia.org/wiki/Easy_Approach_to_Requirements_Syntax) format.  My initial description was:
     * Web game where the user plays a bubble who consumes smaller bubbles but avoids larger bubbles.
 2. **Requirements**: I hand-edited the requirements document extensively based on how I thought the game should go. When this was done, Kiro generated the [`design.md`](.kiro/specs/bubble-consumption-game/design.md) document.
 3. **Design**: Going over the design, I realized that there were requirements that I should have added to the first document.  Then, I specified changes to the design in the chat window (rather than hand-editing the document.)  It's cool that they make use of [Mermaid](https://github.blog/developer-skills/github/include-diagrams-markdown-files-mermaid/) to generate diagrams, the code contains good [JSDoc](https://jsdoc.app/about-getting-started) comments, and there are a lot of unit tests.
@@ -23,7 +23,7 @@ This step took a **long** time.  Many many hours.  The game works, although ther
 * New AI_Bubbles are being spawned too close to the Player_Bubble.  Again, I should have made a requirement to avoid this.
 * Although Kiro created sound files, those files didn't really contain any sound.
 
-Honestly, even for this simple game, the documents generated were **large**.  To realistically review them ought to take a day or more.  It's extremely tempting to just charge forward, see what is generated, and then fix stuff later.   When using this tool in a work environment, it would take genuine discipline to read and review everything properly.
+Honestly, even for this simple game, the documents generated were **large**.  To realistically review them ought to take a day or more.  It's extremely tempting to just charge forward, see what is generated, and then fix stuff later.   When using this tool in a work environment, it would take _genuine_ discipline to read and review everything properly.
 
  
 ## Second Pass: Fix bugs in requirements, and improve 
@@ -35,7 +35,7 @@ I decide to modify the requirements and design using the chat window:
 * Add a requirement that the score and count of lives should be displayed outside the Game_World in 24 point Ariel or Helvetica.
 * Add a requirement that when a new AI_Bubble is spawned, its center must be at least 200 pixels away from the center of the Player_Bubble.
 
-These changes updated the `requirements.md` document.  I had Kiro regenerate the `design.md` and `tasks.md`.  It this point, Kiro told me the five tasks that had been updated and offered to execute the changes for me.  Again, this took a while.  Even if it only ran certain tasks, it appeaers to have executed the tests associated with all tasks.  At this point, I've consumed a total of 162.34 credits.
+These changes updated the `requirements.md` document.  I had Kiro regenerate the `design.md` and `tasks.md`.  It this point, Kiro told me the five tasks that had been updated and offered to execute the changes for me.  Again, this took a long time.  Even if it only ran certain tasks, it appeaers to have executed the tests associated with all tasks.  At this point, I've consumed a total of 162.34 credits.
 
 This was better, but:
 * When the level resets, it hasn't cleared out the old bubbles.
@@ -63,7 +63,15 @@ The game isn't challenging enough, so I add a new kind of bubble:
     * Shrink_Bubbles have a diameter of 20 pixels and are colored red.
     * Whenever a Player_Bubble collides with a Shrink_Bubble, game will play a Shrink sound and the Player_Bubble will change size to 30 pixels and the Shrink_bubble will be destroyed.
 
-When executing the task list, Kiro created the ShrinkBubble class, but for some reason forgot to add the ShrinkBubble logic elsewhere. 
+When executing the task list, Kiro created the ShrinkBubble class, but for some reason forgot to add the ShrinkBubble logic elsewhere. Several other things were missing or not accomplished.  I keep telling Kiro to display the scores outside the game world, but it doesn't do so.  So far, I've expended 288.4 of my Kiro credits.
+
+
+## Fifth Pass: Display Levels.  Fix the end-game screen.
+
+New Requirements:
+* Count the levels.  The first level is 1.  Display the level number onscreen.
+* Add a method to GameScene called 'stopGame' to stop all bubbles and stop game actions.  Once called, the only event recognized will be 'pointerdown', which will cause the whole scene to restart at level 0 and score 0.
+* In GameScene, change the handleGameOver method so it does not pause the scene, but instead calls stopGame.
 
 ---
 
