@@ -6,6 +6,7 @@ describe('HUD Properties', () => {
   let mockScene;
   let mockScoreText;
   let mockLivesText;
+  let mockLevelText;
   let mockGameOverText;
   let capturedStyles;
 
@@ -17,6 +18,10 @@ describe('HUD Properties', () => {
     };
 
     mockLivesText = {
+      setText: vi.fn()
+    };
+
+    mockLevelText = {
       setText: vi.fn()
     };
 
@@ -32,6 +37,7 @@ describe('HUD Properties', () => {
           
           if (text === 'Score: 0') return mockScoreText;
           if (text === 'Lives: 3') return mockLivesText;
+          if (text === 'Level: 1') return mockLevelText;
           if (text.includes('Game Over')) return mockGameOverText;
           return mockGameOverText;
         })
@@ -119,7 +125,7 @@ describe('HUD Properties', () => {
           expect(hud.scoreText).not.toBeNull();
           
           // Update with random score and lives
-          hud.render(score, lives);
+          hud.render(score, lives, 1);
           
           // Verify score text still exists and was updated
           expect(hud.scoreText).toBeDefined();
@@ -135,7 +141,7 @@ describe('HUD Properties', () => {
   it('Property 21: Game Over Display', () => {
     // Feature: bubble-consumption-game, Property 21: Game Over Display
     // For any game state where lives equal 0, the final score should be displayed 
-    // and a restart option should be available.
+    // and a restart option should be available (via stopGame in GameScene).
     // Validates: Requirements 6.2, 6.3
     
     fc.assert(
@@ -164,13 +170,9 @@ describe('HUD Properties', () => {
           expect(gameOverCall).toBeDefined();
           expect(gameOverCall.text).toContain(`Final Score: ${finalScore}`);
           
-          // Verify restart option is available (click handler registered)
-          expect(mockScene.input.once).toHaveBeenCalledWith('pointerdown', expect.any(Function));
-          
-          // Verify the restart handler works
-          const clickHandler = mockScene.input.once.mock.calls[0][1];
-          clickHandler();
-          expect(mockScene.scene.restart).toHaveBeenCalled();
+          // Restart is now handled by stopGame() in GameScene, not HUD
+          // HUD showGameOver should NOT register a pointerdown listener
+          expect(mockScene.input.once).not.toHaveBeenCalled();
           
           return true;
         }

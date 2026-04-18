@@ -34,7 +34,8 @@ function createMockScene(soundMocks = {}, customMocks = {}) {
     },
     input: {
       on: vi.fn(),
-      once: vi.fn()
+      once: vi.fn(),
+      removeAllListeners: vi.fn()
     },
     time: customMocks.time || {
       delayedCall: vi.fn((delay, callback) => callback())

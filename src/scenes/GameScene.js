@@ -21,6 +21,7 @@ class GameScene extends Phaser.Scene {
     // Game state
     this.lives = 3;
     this.score = 0;
+    this.level = 1;
     this.currentBubbleCount = 10;  // Tracks bubble count across scene resets
     
     // Game entities and systems
@@ -33,6 +34,7 @@ class GameScene extends Phaser.Scene {
     this.gameWorldBackground = null;  // Black background for Game_World
     this.gameWorldBorder = null;  // White border for Game_World
     this.isPaused = false;  // Track pause state for scenario restart
+    this.isStopped = false;  // Track game over stopped state
   }
 
   /**
@@ -49,6 +51,9 @@ class GameScene extends Phaser.Scene {
     // Reset lives and score for new scene
     this.lives = data && data.lives !== undefined ? data.lives : 3;
     this.score = data && data.score !== undefined ? data.score : 0;
+    if (data && data.level !== undefined) {
+      this.level = data.level;
+    }
   }
 
   /**
@@ -108,8 +113,8 @@ class GameScene extends Phaser.Scene {
    * @param {number} delta - Time since last frame in milliseconds
    */
   update(time, delta) {
-    // Skip all updates if paused
-    if (this.isPaused) {
+    // Skip all updates if paused or stopped
+    if (this.isPaused || this.isStopped) {
       return;
     }
     
@@ -243,20 +248,33 @@ class GameScene extends Phaser.Scene {
       this.spawnInitialBubbles();
       
       // Restart scene with updated state
+      this.level++;
       this.scene.restart({ 
         bubbleCount: this.currentBubbleCount,
         lives: this.lives,
-        score: this.score
+        score: this.score,
+        level: this.level
       });
     });
   }
 
   /**
+   * Stop the game on game over - disables updates and waits for restart click
+   */
+  stopGame() {
+    this.isStopped = true;
+    this.input.removeAllListeners();
+    this.input.once('pointerdown', () => {
+      this.scene.restart({ bubbleCount: 10, level: 1, score: 0 });
+    });
+  }
+
+  /**
    * Handle game over state
-   * Pauses scene and displays game over screen
+   * Stops scene and displays game over screen
    */
   handleGameOver() {
-    this.scene.pause();
+    this.stopGame();
     this.hud.showGameOver(this.score);
   }
 
@@ -347,7 +365,7 @@ class GameScene extends Phaser.Scene {
     this.playerBubble.render();
     
     // Update HUD
-    this.hud.render(this.score, this.lives);
+    this.hud.render(this.score, this.lives, this.level);
   }
 }
 

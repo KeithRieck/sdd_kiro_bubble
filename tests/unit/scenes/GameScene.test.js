@@ -44,7 +44,8 @@ describe('GameScene', () => {
     // Mock input system
     mockInput = {
       on: vi.fn(),
-      once: vi.fn()
+      once: vi.fn(),
+      removeAllListeners: vi.fn()
     };
 
     // Mock time system
@@ -73,10 +74,12 @@ describe('GameScene', () => {
       expect(gameScene.worldHeight).toBe(600);
       expect(gameScene.lives).toBe(3);
       expect(gameScene.score).toBe(0);
+      expect(gameScene.level).toBe(1);
       expect(gameScene.currentBubbleCount).toBe(10);
       expect(gameScene.aiBubbles).toEqual([]);
       expect(gameScene.shrinkBubbles).toEqual([]);
       expect(gameScene.isPaused).toBe(false);
+      expect(gameScene.isStopped).toBe(false);
     });
 
     it('should have the correct scene key', () => {
@@ -363,7 +366,8 @@ describe('GameScene', () => {
       expect(mockSceneManager.restart).toHaveBeenCalledWith({
         bubbleCount: 12,
         lives: 1,
-        score: 0
+        score: 0,
+        level: 2
       });
     });
 
@@ -401,7 +405,8 @@ describe('GameScene', () => {
       expect(mockSceneManager.restart).toHaveBeenCalledWith({
         bubbleCount: 12,
         lives: 3,
-        score: 0
+        score: 0,
+        level: 2
       });
     });
   });
@@ -409,12 +414,14 @@ describe('GameScene', () => {
   describe('handleGameOver()', () => {
     beforeEach(() => {
       gameScene.create();
+      mockInput.removeAllListeners = vi.fn();
     });
 
-    it('should pause the scene', () => {
+    it('should call stopGame()', () => {
+      const stopGameSpy = vi.spyOn(gameScene, 'stopGame');
       gameScene.handleGameOver();
       
-      expect(mockSceneManager.pause).toHaveBeenCalled();
+      expect(stopGameSpy).toHaveBeenCalled();
     });
 
     it('should show game over screen via HUD', () => {
@@ -549,10 +556,11 @@ describe('GameScene', () => {
       const renderSpy = vi.spyOn(gameScene.hud, 'render');
       gameScene.score = 50;
       gameScene.lives = 2;
+      gameScene.level = 3;
       
       gameScene.render();
       
-      expect(renderSpy).toHaveBeenCalledWith(50, 2);
+      expect(renderSpy).toHaveBeenCalledWith(50, 2, 3);
     });
   });
 });

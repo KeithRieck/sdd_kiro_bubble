@@ -7,12 +7,13 @@ class HUD {
     this.scene = scene;
     this.scoreText = null;
     this.livesText = null;
+    this.levelText = null;
     this.gameOverText = null;
     this.createUI();
   }
 
   /**
-   * Create the UI elements (score and lives text)
+   * Create the UI elements (score, lives, and level text)
    * Uses 24pt Arial or Helvetica font as per Requirements 6.3
    */
   createUI() {
@@ -27,20 +28,28 @@ class HUD {
       fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
+
+    this.levelText = this.scene.add.text(10, 70, 'Level: 1', {
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      fill: '#ffffff'
+    });
   }
 
   /**
-   * Update the HUD display with current score and lives
+   * Update the HUD display with current score, lives, and level
    * @param {number} score - Current score
    * @param {number} lives - Current lives
+   * @param {number} level - Current level
    */
-  render(score, lives) {
+  render(score, lives, level) {
     this.scoreText.setText(`Score: ${score}`);
     this.livesText.setText(`Lives: ${lives}`);
+    this.levelText.setText(`Level: ${level}`);
   }
 
   /**
-   * Display game over screen with final score and restart option
+   * Display game over screen with final score
    * @param {number} finalScore - Final score to display
    */
   showGameOver(finalScore) {
@@ -55,10 +64,6 @@ class HUD {
       }
     );
     this.gameOverText.setOrigin(0.5);
-
-    this.scene.input.once('pointerdown', () => {
-      this.scene.scene.restart();
-    });
   }
 }
 

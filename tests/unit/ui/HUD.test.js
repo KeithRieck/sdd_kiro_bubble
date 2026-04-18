@@ -5,6 +5,7 @@ describe('HUD', () => {
   let mockScene;
   let mockScoreText;
   let mockLivesText;
+  let mockLevelText;
   let mockGameOverText;
 
   beforeEach(() => {
@@ -16,6 +17,10 @@ describe('HUD', () => {
       setText: vi.fn()
     };
 
+    mockLevelText = {
+      setText: vi.fn()
+    };
+
     mockGameOverText = {
       setOrigin: vi.fn()
     };
@@ -23,12 +28,10 @@ describe('HUD', () => {
     mockScene = {
       add: {
         text: vi.fn((x, y, text, style) => {
-          // Check for exact matches first to avoid substring issues
           if (text === 'Score: 0') return mockScoreText;
           if (text === 'Lives: 3') return mockLivesText;
-          // Game Over text contains "Score" but should return game over mock
+          if (text === 'Level: 1') return mockLevelText;
           if (text.includes('Game Over')) return mockGameOverText;
-          // Fallback for any other text
           return mockGameOverText;
         })
       },
@@ -41,7 +44,7 @@ describe('HUD', () => {
     };
   });
 
-  it('should create score and lives text on construction', () => {
+  it('should create score, lives, and level text on construction', () => {
     const hud = new HUD(mockScene);
 
     expect(mockScene.add.text).toHaveBeenCalledWith(10, 10, 'Score: 0', {
@@ -55,20 +58,26 @@ describe('HUD', () => {
       fontFamily: 'Arial, Helvetica, sans-serif',
       fill: '#ffffff'
     });
+
+    expect(mockScene.add.text).toHaveBeenCalledWith(10, 70, 'Level: 1', {
+      fontSize: '24pt',
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      fill: '#ffffff'
+    });
   });
 
-  it('should update score and lives text when render is called', () => {
+  it('should update score, lives, and level text when render is called', () => {
     const hud = new HUD(mockScene);
-    hud.render(150, 2);
+    hud.render(150, 2, 4);
 
     expect(mockScoreText.setText).toHaveBeenCalledWith('Score: 150');
     expect(mockLivesText.setText).toHaveBeenCalledWith('Lives: 2');
+    expect(mockLevelText.setText).toHaveBeenCalledWith('Level: 4');
   });
 
   it('should display game over screen with final score', () => {
     const hud = new HUD(mockScene);
     
-    // Reset the mock to track only showGameOver calls
     mockScene.add.text.mockClear();
     
     hud.showGameOver(250);
@@ -87,27 +96,21 @@ describe('HUD', () => {
     expect(mockGameOverText.setOrigin).toHaveBeenCalledWith(0.5);
   });
 
-  it('should set up restart handler when showing game over', () => {
+  it('should NOT register a pointerdown listener in showGameOver', () => {
     const hud = new HUD(mockScene);
     
-    // Reset the mock to track only showGameOver calls
-    mockScene.add.text.mockClear();
+    mockScene.input.once.mockClear();
     
     hud.showGameOver(250);
 
-    expect(mockScene.input.once).toHaveBeenCalledWith('pointerdown', expect.any(Function));
-
-    // Simulate click
-    const clickHandler = mockScene.input.once.mock.calls[0][1];
-    clickHandler();
-
-    expect(mockScene.scene.restart).toHaveBeenCalled();
+    expect(mockScene.input.once).not.toHaveBeenCalled();
   });
 
-  it('should maintain score and lives text references', () => {
+  it('should maintain score, lives, and level text references', () => {
     const hud = new HUD(mockScene);
 
     expect(hud.scoreText).toBe(mockScoreText);
     expect(hud.livesText).toBe(mockLivesText);
+    expect(hud.levelText).toBe(mockLevelText);
   });
 });
