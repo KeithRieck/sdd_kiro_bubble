@@ -259,13 +259,17 @@ class GameScene extends Phaser.Scene {
   }
 
   /**
-   * Stop the game on game over - disables updates and waits for restart click
+   * Stop the game on game over - disables updates and waits for restart click.
+   * On click, restarts the scene completely from scratch with full initial state.
    */
   stopGame() {
     this.isStopped = true;
     this.input.removeAllListeners();
     this.input.once('pointerdown', () => {
-      this.scene.restart({ bubbleCount: 10, level: 1, score: 0 });
+      // Use scene.start() to fully reload the scene from scratch,
+      // equivalent to the game being loaded for the first time.
+      this.isStopped = false;
+      this.scene.start('GameScene');
     });
   }
 

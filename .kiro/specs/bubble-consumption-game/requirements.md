@@ -118,7 +118,7 @@ A browser-based Progressive Web Application (PWA) game where the player controls
 5. THE GameScene SHALL provide a stopGame() method that stops all bubble movement and disables all game actions
 6. WHEN stopGame() is called, THE Game SHALL halt updates to all AI_Bubbles and Shrink_Bubbles
 7. WHEN stopGame() is called, THE Game SHALL remove all existing input event listeners
-8. WHEN stopGame() is called, THE Game SHALL register a single pointerdown listener that restarts the scene with Level 1 and Score 0
+8. WHEN stopGame() is called, THE Game SHALL register a single pointerdown listener that restarts the scene with the full initial game state: Level 1, Score 0, Lives 3, and bubble count 10
 9. WHEN handleGameOver() is called, THE Game SHALL call stopGame() instead of pausing the scene
 
 ### Requirement 8: Progressive Web Application Features
