@@ -2,12 +2,19 @@
   "name": "Bubble Consumption Game",
   "short_name": "Bubbles",
   "description": "Grow your bubble by consuming smaller ones",
+  "version": "0.1",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#4a90e2",
   "orientation": "any",
   "icons": [
+    {
+      "src": "/assets/images/icon_128x128.png",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/assets/images/icon_192x192.png",
       "sizes": "192x192",
