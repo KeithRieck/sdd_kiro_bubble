@@ -269,7 +269,13 @@ class GameScene extends Phaser.Scene {
       // Use scene.start() to fully reload the scene from scratch,
       // equivalent to the game being loaded for the first time.
       this.isStopped = false;
-      this.scene.start('GameScene');
+      this.scene.restart({ 
+        bubbleCount: 10,
+        lives: 3,
+        score: 0,
+        level: 1
+      });
+      // this.scene.start('GameScene');
     });
   }
 
